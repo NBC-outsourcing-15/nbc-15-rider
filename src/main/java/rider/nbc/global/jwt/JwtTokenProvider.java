@@ -4,6 +4,7 @@ import java.security.Key;
 import java.time.Duration;
 import java.util.Date;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -109,5 +110,14 @@ public class JwtTokenProvider {
 	public Duration getRefreshTokenDuration() {
 		return Duration.ofMillis(refreshTokenExpiration);
 	}
+
+	public String resolveToken(HttpServletRequest request) {
+		String bearer = request.getHeader("Authorization");
+		if (bearer != null && bearer.startsWith("Bearer ")) {
+			return bearer.substring(7);
+		}
+		return null;
+	}
+
 
 }

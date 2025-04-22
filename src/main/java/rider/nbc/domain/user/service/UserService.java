@@ -80,12 +80,19 @@ public class UserService {
         TokenResponseDto newToken = jwtTokenProvider.generateTokenPair(userId);
 
         // 5. Redis 갱신
-        redisTemplate.opsForValue().set(
-                redisKey,
-                newToken.getRefreshToken(),
-                jwtTokenProvider.getRefreshTokenDuration()
+        redisTemplate.opsForValue().set(redisKey, newToken.getRefreshToken(), jwtTokenProvider.getRefreshTokenDuration()
         );
 
         return newToken;
+    }
+
+    public void logout(Long userId) {
+        String redisKey = "refresh_token:" + userId;
+
+        Boolean deleted = redisTemplate.delete(redisKey);
+
+        if (Boolean.FALSE.equals(deleted)) {
+            throw new UserException(UserExceptionCode.USER_NOT_FOUND);
+        }
     }
 }
