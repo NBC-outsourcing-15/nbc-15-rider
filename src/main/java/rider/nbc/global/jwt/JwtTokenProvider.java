@@ -1,6 +1,7 @@
 package rider.nbc.global.jwt;
 
 import java.security.Key;
+import java.time.Duration;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -104,4 +105,9 @@ public class JwtTokenProvider {
 			throw new RuntimeException("TODO Implmented");
 		}
 	}
+
+	public Duration getRefreshTokenDuration() {
+		return Duration.ofMillis(refreshTokenExpiration);
+	}
+
 }
