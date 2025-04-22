@@ -5,9 +5,12 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import rider.nbc.domain.user.dto.LoginRequestDto;
+import rider.nbc.domain.user.dto.ReissueRequestDto;
 import rider.nbc.domain.user.dto.SignupRequestDto;
 import rider.nbc.domain.user.entity.User;
 import rider.nbc.domain.user.entity.UserStatus;
+import rider.nbc.domain.user.exception.UserException;
+import rider.nbc.domain.user.exception.UserExceptionCode;
 import rider.nbc.domain.user.repository.UserRepository;
 import rider.nbc.global.jwt.JwtTokenProvider;
 import rider.nbc.global.jwt.TokenResponseDto;
@@ -56,5 +59,33 @@ public class UserService {
         );
 
         return token;
+    }
+
+    public TokenResponseDto reissue(ReissueRequestDto dto) {
+        String refreshToken = dto.getRefreshToken();
+
+        // 1. 사용자 ID 추출
+        String userId = jwtTokenProvider.getAuthorId(refreshToken);
+
+        // 2. Redis 에 저장된 토큰 조회
+        String redisKey = "refresh_token:" + userId;
+        String savedToken = redisTemplate.opsForValue().get(redisKey);
+
+        // 3. 비교
+        if (savedToken == null || !savedToken.equals(refreshToken)) {
+            throw new UserException(UserExceptionCode.TOKEN_NOT_MATCHED);
+        }
+
+        // 4. 새 토큰 발급
+        TokenResponseDto newToken = jwtTokenProvider.generateTokenPair(userId);
+
+        // 5. Redis 갱신
+        redisTemplate.opsForValue().set(
+                redisKey,
+                newToken.getRefreshToken(),
+                jwtTokenProvider.getRefreshTokenDuration()
+        );
+
+        return newToken;
     }
 }

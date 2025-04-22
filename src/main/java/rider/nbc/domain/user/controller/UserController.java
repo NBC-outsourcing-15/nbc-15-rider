@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rider.nbc.domain.user.dto.LoginRequestDto;
+import rider.nbc.domain.user.dto.ReissueRequestDto;
 import rider.nbc.domain.user.dto.SignupRequestDto;
 import rider.nbc.domain.user.service.UserService;
 import rider.nbc.global.jwt.TokenResponseDto;
@@ -32,4 +33,9 @@ public class UserController {
         return ResponseEntity.ok(token);
     }
 
+    @PostMapping("/reissue")
+    public ResponseEntity<TokenResponseDto> reissue(@RequestBody ReissueRequestDto dto) {
+        TokenResponseDto token = userService.reissue(dto);
+        return ResponseEntity.ok(token);
+    }
 }

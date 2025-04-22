@@ -49,6 +49,7 @@ public class SecurityConfig {
 				.requestMatchers(
 						"/api/v1/users/signup",         // 로그인, 회원가입, 재발급 등 인증 없이 접근 가능
 						"/api/v1/users/signin",
+						"/api/v1/users/reissue",
 					"/oauth2/**"        // 소셜 로그인 경로도 포함
 				).permitAll()
 				.anyRequest().authenticated()
