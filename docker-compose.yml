@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  nbc-15-mysql:
+    image: mysql:8.0.35
+
+    platform: linux/amd64
+    volumes:
+      - nbc-15_mysql_volume:/data
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: qwer1234
+      MYSQL_DATABASE: delivery
+    command:
+      [ 'mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci', '--lower_case_table_names=1' ]
+
+  nbc-15-redis:
+    image: redis:7.2
+    ports:
+      - '6379:6379'
+    volumes:
+      - nbc-15_redis_volume:/data
+    command: redis-server --requirepass qwer1234 --appendonly yes
+
+volumes:
+  nbc-15_mysql_volume:
+  nbc-15_redis_volume:

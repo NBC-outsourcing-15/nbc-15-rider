@@ -1,0 +1,33 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 3000
+      password: qwer1234
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/delivery
+    username: root
+    password: qwer1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+      properties:
+        hibernate:
+          format_sql: debug
+          show_sql: debug
+          use_sql_comments: debug
+
+jwt:
+  secret-key: yourSuperSecretKey1234567890yourSuperSecretKey1234567890
+  access-token-expiration: 3600000
+  refresh-token-expiration: 604800000
+  header: Authorization
+  prefix: Bearer
