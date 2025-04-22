@@ -2,8 +2,6 @@ package rider.nbc.domain.menu.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -49,9 +47,9 @@ public class Menu extends TimeBaseEntity {
 	@Column
 	private String menuPictureUrl;
 
-	@Column
-	@Enumerated(value = EnumType.STRING)
-	private MenuStatus menuStatus;
+	// @Column
+	// @Enumerated(value = EnumType.STRING)
+	// private MenuStatus menuStatus;
 
 	@ManyToOne
 	@JoinColumn(name = "store_id")
