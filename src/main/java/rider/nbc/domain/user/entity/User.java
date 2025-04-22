@@ -12,7 +12,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import rider.nbc.global.config.TimeBaseEntity;
+import rider.nbc.global.exception.BaseException;
+import rider.nbc.global.exceptionCode.ExceptionCode;
 
 /**
  * @author    : kimjungmin
@@ -29,6 +32,9 @@ public class User extends TimeBaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
 	private Long id;
+
+	@Column(nullable = false, unique = true)
+	private String email;
 
 	@Column
 	private String password;
@@ -52,4 +58,20 @@ public class User extends TimeBaseEntity {
 	@Enumerated(value = EnumType.STRING)
 	@Column(nullable = false)
 	private SocialType socialType = SocialType.NORMAL;
+
+	public void validatePassword(String rawPassword, PasswordEncoder encoder) {
+		if (!encoder.matches(rawPassword, this.password)) {
+			throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+		}
+	}
+
+	public void softDelete() {
+		this.status = UserStatus.DELETE;
+	}
+
+	public void validateIsActive() {
+		if (this.status != UserStatus.ACTIVE) {
+			throw new RuntimeException("비활성화 된 계정입니다.");
+		}
+	}
 }

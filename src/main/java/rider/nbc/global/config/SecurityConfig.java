@@ -6,6 +6,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -45,7 +47,7 @@ public class SecurityConfig {
 			// 요청별 권한 설정
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers(
-					"/auth/**",         // 로그인, 회원가입, 재발급 등 인증 없이 접근 가능
+					"/users/**",         // 로그인, 회원가입, 재발급 등 인증 없이 접근 가능
 					"/oauth2/**"        // 소셜 로그인 경로도 포함
 				).permitAll()
 				.anyRequest().authenticated()
@@ -57,4 +59,10 @@ public class SecurityConfig {
 			// 최종 SecurityFilterChain 반환
 			.build();
 	}
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
 }
