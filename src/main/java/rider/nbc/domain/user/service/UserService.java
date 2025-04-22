@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import rider.nbc.domain.user.dto.LoginRequestDto;
 import rider.nbc.domain.user.dto.ReissueRequestDto;
 import rider.nbc.domain.user.dto.SignupRequestDto;
@@ -14,8 +15,6 @@ import rider.nbc.domain.user.exception.UserExceptionCode;
 import rider.nbc.domain.user.repository.UserRepository;
 import rider.nbc.global.jwt.JwtTokenProvider;
 import rider.nbc.global.jwt.TokenResponseDto;
-
-import java.time.Duration;
 
 @Service
 @RequiredArgsConstructor
@@ -92,7 +91,18 @@ public class UserService {
         Boolean deleted = redisTemplate.delete(redisKey);
 
         if (Boolean.FALSE.equals(deleted)) {
-            throw new UserException(UserExceptionCode.USER_NOT_FOUND);
+            throw new UserException(UserExceptionCode.TOKEN_NOT_MATCHED);
         }
     }
+
+    @Transactional
+    public void withdraw(Long userId, String rawPassword) {
+        User user = userRepository.findActiveByIdOrThrow(userId);
+
+        user.validateIsActive();
+        user.validatePassword(rawPassword, passwordEncoder);
+
+        user.softDelete();
+    }
+
 }

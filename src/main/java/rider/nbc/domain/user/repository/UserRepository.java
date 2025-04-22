@@ -2,6 +2,7 @@ package rider.nbc.domain.user.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import rider.nbc.domain.user.entity.User;
+import rider.nbc.domain.user.entity.UserStatus;
 import rider.nbc.domain.user.exception.UserException;
 import rider.nbc.domain.user.exception.UserExceptionCode;
 
@@ -28,6 +29,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
             throw new UserException(UserExceptionCode.NICKNAME_DUPLICATION);
         }
     }
+
+    default User findActiveByIdOrThrow(Long id) {
+        User user = findById(id)
+                .orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
+
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            throw new UserException(UserExceptionCode.USER_DELETED);
+        }
+        return user;
+    }
+
 }
 
 
