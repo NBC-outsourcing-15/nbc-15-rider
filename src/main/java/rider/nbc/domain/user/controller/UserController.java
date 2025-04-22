@@ -14,7 +14,7 @@ import rider.nbc.global.jwt.TokenResponseDto;
 
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
 

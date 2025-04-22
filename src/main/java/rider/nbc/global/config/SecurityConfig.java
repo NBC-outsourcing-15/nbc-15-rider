@@ -47,7 +47,8 @@ public class SecurityConfig {
 			// 요청별 권한 설정
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers(
-					"/users/**",         // 로그인, 회원가입, 재발급 등 인증 없이 접근 가능
+						"/api/v1/users/signup",         // 로그인, 회원가입, 재발급 등 인증 없이 접근 가능
+						"/api/v1/users/signin",
 					"/oauth2/**"        // 소셜 로그인 경로도 포함
 				).permitAll()
 				.anyRequest().authenticated()

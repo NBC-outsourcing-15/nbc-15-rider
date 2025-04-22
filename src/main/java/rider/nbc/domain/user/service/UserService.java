@@ -24,6 +24,8 @@ public class UserService {
 
     public void signup(SignupRequestDto dto) {
         String encodedPassword = passwordEncoder.encode(dto.getPassword());
+        userRepository.checkEmailDuplicate(dto.getEmail());
+        userRepository.checkNicknameDuplicate(dto.getNickname());
 
         User user = User.builder()
                 .email(dto.getEmail())
@@ -40,15 +42,13 @@ public class UserService {
     }
 
     public TokenResponseDto login(LoginRequestDto dto) {
-        User user = userRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 이메일입니다."));
-
+        User user = userRepository.findByEmailOrThrow(dto.getEmail());
         user.validateIsActive(); // soft delete 확인
         user.validatePassword(dto.getPassword(), passwordEncoder);
 
         TokenResponseDto token = jwtTokenProvider.generateTokenPair(user.getId().toString());
 
-        // Redis에 RefreshToken 저장 (7일)
+        // Redis에 RefreshToken 저장
         redisTemplate.opsForValue().set(
                 "refresh_token:" + user.getId(),
                 token.getRefreshToken(),
