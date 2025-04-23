@@ -40,6 +40,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             String email = kakaoUser.getEmail();
             String nickname = kakaoUser.getNickname();
 
+            userRepository.validateSocialJoinEmail(email);
+
             user = userRepository.findByEmail(email).orElseGet(() ->
                     userRepository.save(User.builder()
                             .email(email)
@@ -55,14 +57,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             String nickname = naverUser.getNickname();
             String socialId = naverUser.getSocialId();
 
-            user = userRepository.findByEmail(email).orElseGet(() ->
-                    userRepository.save(User.builder()
+            userRepository.validateSocialJoinEmail(email);
+
+            user = userRepository.findBySocialIdAndSocialType(socialId, SocialType.NAVER)
+                    .orElseGet(() -> userRepository.save(User.builder()
                             .email(email)
                             .nickname(nickname)
-                            .role(Role.USER)
-                            .status(UserStatus.ACTIVE)
                             .socialId(socialId)
                             .socialType(SocialType.NAVER)
+                            .role(Role.USER)
+                            .status(UserStatus.ACTIVE)
                             .build()));
 
         } else {

@@ -3,6 +3,7 @@ package rider.nbc.domain.user.repository;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import rider.nbc.domain.user.entity.SocialType;
 import rider.nbc.domain.user.entity.User;
 import rider.nbc.domain.user.entity.UserStatus;
 import rider.nbc.domain.user.exception.UserException;
@@ -15,6 +16,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
 
+    Optional<User> findBySocialIdAndSocialType(String socialId, SocialType socialType);
+
+
     default User findByEmailOrThrow(String email) {
         return findByEmail(email).orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
     }
@@ -24,6 +28,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
             throw new UserException(UserExceptionCode.EMAIL_DUPLICATION);
         }
     }
+
+    default void validateSocialJoinEmail(String email) {
+        if (email != null && findByEmail(email).isPresent()) {
+            throw new UserException(UserExceptionCode.EMAIL_DUPLICATION);
+        }
+    }
+
 
     boolean existsByNickname(String nickname);
 
