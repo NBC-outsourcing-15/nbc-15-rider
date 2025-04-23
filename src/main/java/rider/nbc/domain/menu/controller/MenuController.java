@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import rider.nbc.domain.menu.dto.MenuCreateRequestDto;
 import rider.nbc.domain.menu.dto.MenuResponseDto;
+import rider.nbc.domain.menu.dto.MenuUpdateRequestDto;
 import rider.nbc.domain.menu.entity.Menu;
 import rider.nbc.domain.menu.service.MenuService;
 import rider.nbc.global.response.CommonResponse;
@@ -50,6 +52,36 @@ public class MenuController {
                         .success(true)
                         .status(HttpStatus.CREATED.value())
                         .message("메뉴가 성공적으로 생성되었습니다.")
+                        .result(responseDto)
+                        .build());
+    }
+
+    /**
+     * 메뉴를 수정
+     * 요청한 사용자가 가게의 소유자인 경우에만 메뉴 수정이 가능
+     *
+     * @param storeId 메뉴가 속한 가게 ID
+     * @param menuId 수정할 메뉴 ID
+     * @param requestDto 메뉴 수정 요청 DTO
+     * @param authentication 인증 정보
+     * @return 수정된 메뉴 정보
+     */
+    @PutMapping("/api/v1/stores/{storeId}/menus/{menuId}")
+    public ResponseEntity<CommonResponse<MenuResponseDto>> updateMenu(
+            @PathVariable Long storeId,
+            @PathVariable Long menuId,
+            @Valid @RequestBody MenuUpdateRequestDto requestDto,
+            Authentication authentication) {
+        // 현재 인증된 사용자 정보 가져오기
+        String userId = authentication.getName();
+        Menu updatedMenu = menuService.updateMenu(userId, storeId, menuId, requestDto);
+        MenuResponseDto responseDto = MenuResponseDto.fromEntity(updatedMenu);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.<MenuResponseDto>builder()
+                        .success(true)
+                        .status(HttpStatus.OK.value())
+                        .message("메뉴가 성공적으로 수정되었습니다.")
                         .result(responseDto)
                         .build());
     }
