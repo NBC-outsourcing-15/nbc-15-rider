@@ -3,6 +3,7 @@ package rider.nbc.domain.menu.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -83,6 +84,32 @@ public class MenuController {
                         .status(HttpStatus.OK.value())
                         .message("메뉴가 성공적으로 수정되었습니다.")
                         .result(responseDto)
+                        .build());
+    }
+
+    /**
+     * 메뉴를 삭제
+     * 요청한 사용자가 가게의 소유자인 경우에만 메뉴 삭제가 가능
+     *
+     * @param storeId 메뉴가 속한 가게 ID
+     * @param menuId 삭제할 메뉴 ID
+     * @param authentication 인증 정보
+     * @return 삭제 성공 응답
+     */
+    @DeleteMapping("/api/v1/stores/{storeId}/menus/{menuId}")
+    public ResponseEntity<CommonResponse<Void>> deleteMenu(
+            @PathVariable Long storeId,
+            @PathVariable Long menuId,
+            Authentication authentication) {
+        // 현재 인증된 사용자 정보 가져오기
+        String userId = authentication.getName();
+        menuService.deleteMenu(userId, storeId, menuId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.<Void>builder()
+                        .success(true)
+                        .status(HttpStatus.OK.value())
+                        .message("메뉴가 성공적으로 삭제되었습니다.")
                         .build());
     }
 }
