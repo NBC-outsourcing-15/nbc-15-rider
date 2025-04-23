@@ -25,7 +25,7 @@ import rider.nbc.global.config.TimeBaseEntity;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @Entity
 @Table(name = "users")
 public class User extends TimeBaseEntity {
@@ -51,13 +51,15 @@ public class User extends TimeBaseEntity {
 
 	@Enumerated(value = EnumType.STRING)
 	@Column(nullable = false)
+	@Builder.Default
 	private UserStatus status = UserStatus.ACTIVE;
 
 	@Column
-	private Long point;
+	private long point;
 
 	@Enumerated(value = EnumType.STRING)
 	@Column(nullable = false)
+	@Builder.Default
 	private SocialType socialType = SocialType.NORMAL;
 
 	public void validatePassword(String rawPassword, PasswordEncoder encoder) {
@@ -79,5 +81,15 @@ public class User extends TimeBaseEntity {
 	// Store CEO 확인용 로직
 	public boolean isCEO() {
 		return ROLE_CEO.equals(role);
+	}
+
+	// 결제 성공으로 인한 포인트 추가
+	public void plusPoint(Long amount) {
+		this.point += amount;
+	}
+
+	// 결제 취소로 인한 포인트 차감
+	public void minusPoint(Long amount) {
+		this.point -= amount;
 	}
 }
