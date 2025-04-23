@@ -2,28 +2,19 @@ package rider.nbc.domain.store.exception;
 
 import org.springframework.http.HttpStatus;
 
+import lombok.Getter;
 import rider.nbc.global.exception.BaseException;
 
+@Getter
 public class StoreException extends BaseException {
 
-	private final StoreExceptionCode storeExceptionCode;
+	private final StoreExceptionCode errorCode;
+	private final HttpStatus httpStatus;
+	private final String message;
 
-	public StoreException(StoreExceptionCode storeExceptionCode) {
-		this.storeExceptionCode = storeExceptionCode;
-	}
-
-	@Override
-	public Enum<?> getErrorCode() {
-		return storeExceptionCode;
-	}
-
-	@Override
-	public HttpStatus getHttpStatus() {
-		return storeExceptionCode.getHttpStatus();
-	}
-
-	@Override
-	public String getMessage() {
-		return storeExceptionCode.getMessage();
+	public StoreException(StoreExceptionCode errorCode) {
+		this.errorCode = errorCode;
+		this.httpStatus = errorCode.getHttpStatus();
+		this.message = errorCode.getMessage();
 	}
 }
