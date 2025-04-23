@@ -50,7 +50,7 @@ public class UserService {
         user.validateIsActive(); // soft delete 확인
         user.validatePassword(dto.getPassword(), passwordEncoder);
 
-        TokenResponseDto token = jwtTokenProvider.generateTokenPair(user.getId(), user.getEmail(), user.getRole());
+        TokenResponseDto token = jwtTokenProvider.generateTokenPair(user.getId(), user.getEmail(),user.getNickname(), user.getRole());
 
         // Redis에 RefreshToken 저장
         redisTemplate.opsForValue().set(
@@ -67,6 +67,7 @@ public class UserService {
 
         Long userId = jwtTokenProvider.getAuthorId(refreshToken);
         String email = jwtTokenProvider.getEmail(refreshToken);
+        String nickname = jwtTokenProvider.getNickname(refreshToken);
         Role role = jwtTokenProvider.getRole(refreshToken);
 
         // 2. Redis 에 저장된 토큰 조회
@@ -79,7 +80,7 @@ public class UserService {
         }
 
         // 4. 새 토큰 발급
-        TokenResponseDto newToken = jwtTokenProvider.generateTokenPair(userId, email, role);
+        TokenResponseDto newToken = jwtTokenProvider.generateTokenPair(userId, email, nickname, role);
 
         // 5. Redis 갱신
         redisTemplate.opsForValue().set(redisKey, newToken.getRefreshToken(), jwtTokenProvider.getRefreshTokenDuration()

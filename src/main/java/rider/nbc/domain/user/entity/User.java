@@ -10,6 +10,8 @@ import rider.nbc.domain.user.exception.UserException;
 import rider.nbc.domain.user.exception.UserExceptionCode;
 import rider.nbc.global.config.TimeBaseEntity;
 
+import static rider.nbc.domain.store.constant.StoreConstants.ROLE_CEO;
+
 /**
  * @author : kimjungmin
  * Created on : 2025. 4. 22.
@@ -52,6 +54,7 @@ public class User extends TimeBaseEntity {
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     private SocialType socialType = SocialType.NORMAL;
+
 
     public void validatePassword(String rawPassword, PasswordEncoder encoder) {
         if (!encoder.matches(rawPassword, this.password)) {
