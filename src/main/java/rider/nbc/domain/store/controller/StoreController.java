@@ -2,7 +2,7 @@ package rider.nbc.domain.store.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +13,7 @@ import rider.nbc.domain.store.dto.StoreCreateRequestDto;
 import rider.nbc.domain.store.dto.StoreResponseDto;
 import rider.nbc.domain.store.entity.Store;
 import rider.nbc.domain.store.service.StoreService;
+import rider.nbc.global.auth.AuthUser;
 import rider.nbc.global.response.CommonResponse;
 
 /**
@@ -35,10 +36,9 @@ public class StoreController {
 	@PostMapping("/api/v1/stores")
 	public ResponseEntity<CommonResponse<StoreResponseDto>> createStore(
 		@Valid @RequestBody StoreCreateRequestDto requestDto,
-		Authentication authentication) {
+		@AuthenticationPrincipal AuthUser authUser) {
 		// 현재 인증된 사용자 정보 가져오기
-		String userId = authentication.getName();
-		Store savedStore = storeService.createStore(userId, requestDto);
+		Store savedStore = storeService.createStore(authUser.getId(), requestDto);
 		StoreResponseDto responseDto = StoreResponseDto.fromEntity(savedStore);
 
 		return ResponseEntity.status(HttpStatus.CREATED)

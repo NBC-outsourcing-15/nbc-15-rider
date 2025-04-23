@@ -35,9 +35,9 @@ public class StoreService {
 	 * @return 생성된 가게 정보
 	 */
 	@Transactional
-	public Store createStore(String ownerId, StoreCreateRequestDto requestDto) {
+	public Store createStore(Long ownerId, StoreCreateRequestDto requestDto) {
 		// 사용자 정보 조회
-		User user = userRepository.findByOwnerIdOrThrow(Long.parseLong(ownerId));
+		User user = userRepository.findByOwnerIdOrThrow(ownerId);
 
 		// CEO 권한 확인
 		if (!user.isCEO()) {

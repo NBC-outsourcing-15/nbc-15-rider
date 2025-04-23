@@ -20,6 +20,7 @@ import rider.nbc.domain.store.entity.Store;
 import rider.nbc.domain.store.exception.StoreException;
 import rider.nbc.domain.store.exception.StoreExceptionCode;
 import rider.nbc.domain.store.repository.StoreRepository;
+import rider.nbc.domain.user.entity.Role;
 import rider.nbc.domain.user.entity.User;
 import rider.nbc.domain.user.repository.UserRepository;
 
@@ -40,7 +41,7 @@ class StoreServiceTest {
 	class Describe_createStore {
 
 		// 테스트에 사용할 공통 요청
-		String ownerId = "1";
+		Long ownerId = 1L;
 		StoreCreateRequestDto requestDto = StoreCreateRequestDto.builder()
 			.name("Test Store")
 			.category("Test Category")
@@ -59,7 +60,7 @@ class StoreServiceTest {
 			@DisplayName("가게를 생성하고 반환한다")
 			void it_creates_and_returns_store() {
 				// Given
-				User ceoUser = defaultUser("CEO");
+				User ceoUser = defaultUser(Role.CEO);
 
 				Store expectedStore = requestDto.toEntity(ceoUser);
 
@@ -103,7 +104,7 @@ class StoreServiceTest {
 			@DisplayName("NOT_CEO 예외를 던진다")
 			void it_throws_not_ceo_exception() {
 				// Given
-				User nonCeoUser = defaultUser("User");
+				User nonCeoUser = defaultUser(Role.USER);
 
 				when(userRepository.findByOwnerIdOrThrow(1L)).thenReturn(nonCeoUser);
 
@@ -122,7 +123,7 @@ class StoreServiceTest {
 			@DisplayName("TOO_MANY_STORE 예외를 던진다")
 			void it_throws_too_many_store_exception() {
 				// Given
-				User ceoUser = defaultUser("CEO");
+				User ceoUser = defaultUser(Role.CEO);
 
 				when(userRepository.findByOwnerIdOrThrow(1L)).thenReturn(ceoUser);
 				when(storeRepository.countByOwner(ceoUser)).thenReturn(3L); // 최대 개수 이상
