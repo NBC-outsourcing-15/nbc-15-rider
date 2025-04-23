@@ -3,9 +3,9 @@ package rider.nbc.domain.user.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import rider.nbc.domain.user.entity.Role;
 import rider.nbc.domain.user.entity.SocialType;
 
 @Getter
@@ -24,6 +24,6 @@ public class SignupRequestDto {
 
     private String nickname;
     private String phone;
-    private String role;
+    private Role role;
     private SocialType socialType = SocialType.NORMAL;
 }

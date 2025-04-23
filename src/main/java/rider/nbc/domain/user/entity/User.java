@@ -38,8 +38,9 @@ public class User extends TimeBaseEntity {
     @Column
     private String phone;
 
-    @Column
-    private String role;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)

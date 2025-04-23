@@ -1,6 +1,5 @@
 package rider.nbc.domain.user.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,8 +10,9 @@ import rider.nbc.domain.user.dto.ReissueRequestDto;
 import rider.nbc.domain.user.dto.SignupRequestDto;
 import rider.nbc.domain.user.dto.WithdrawRequestDto;
 import rider.nbc.domain.user.service.UserService;
+import rider.nbc.global.auth.AuthUser;
 import rider.nbc.global.jwt.JwtTokenProvider;
-import rider.nbc.global.jwt.TokenResponseDto;
+import rider.nbc.global.jwt.dto.TokenResponseDto;
 
 
 @RestController
@@ -42,14 +42,14 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@AuthenticationPrincipal Long userId) {
-        userService.logout(userId);
+    public ResponseEntity<Void> logout(@AuthenticationPrincipal AuthUser authUser) {
+        userService.logout(authUser.getId());
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/withdraw")
-    public ResponseEntity<Void> withdraw(@AuthenticationPrincipal Long userId, @Valid @RequestBody WithdrawRequestDto dto) {
-        userService.withdraw(userId, dto.getPassword());
+    public ResponseEntity<Void> withdraw(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody WithdrawRequestDto dto) {
+        userService.withdraw(authUser.getId(), dto.getPassword());
         return ResponseEntity.ok().build();
     }
 
