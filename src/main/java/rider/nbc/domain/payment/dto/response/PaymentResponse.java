@@ -1,5 +1,6 @@
 package rider.nbc.domain.payment.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import rider.nbc.domain.payment.entity.Payment;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PaymentResponse {
 	private Long id;
 	private String payType;
