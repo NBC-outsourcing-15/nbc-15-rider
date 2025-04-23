@@ -1,5 +1,9 @@
 package rider.nbc.domain.user.entity;
 
+import static rider.nbc.domain.store.constant.StoreConstants.*;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,10 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import rider.nbc.global.config.TimeBaseEntity;
-import rider.nbc.global.exception.BaseException;
-import rider.nbc.global.exceptionCode.ExceptionCode;
 
 /**
  * @author    : kimjungmin
@@ -73,5 +74,10 @@ public class User extends TimeBaseEntity {
 		if (this.status != UserStatus.ACTIVE) {
 			throw new RuntimeException("비활성화 된 계정입니다.");
 		}
+	}
+
+	// Store CEO 확인용 로직
+	public boolean isCEO() {
+		return ROLE_CEO.equals(role);
 	}
 }
