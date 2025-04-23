@@ -27,89 +27,87 @@ import rider.nbc.global.response.CommonResponse;
 @RequiredArgsConstructor
 public class MenuController {
 
-    private final MenuService menuService;
+	private final MenuService menuService;
 
-    /**
-     * 메뉴를 생성
-     * 요청한 사용자가 가게의 소유자인 경우에만 메뉴 생성이 가능
-     *
-     * @param storeId 메뉴를 생성할 가게 ID
-     * @param requestDto 메뉴 생성 요청 DTO
-     * @param authentication 인증 정보
-     * @return 생성된 메뉴 정보
-     */
-    @PostMapping("/api/v1/stores/{storeId}/menus")
-    public ResponseEntity<CommonResponse<MenuResponseDto>> createMenu(
-            @PathVariable Long storeId,
-            @Valid @RequestBody MenuCreateRequestDto requestDto,
-            Authentication authentication) {
-        // 현재 인증된 사용자 정보 가져오기
-        String userId = authentication.getName();
-        Menu savedMenu = menuService.createMenu(userId, storeId, requestDto);
-        MenuResponseDto responseDto = MenuResponseDto.fromEntity(savedMenu);
+	/**
+	 * 메뉴를 생성
+	 * 요청한 사용자가 가게의 소유자인 경우에만 메뉴 생성이 가능
+	 *
+	 * @param storeId 메뉴를 생성할 가게 ID
+	 * @param requestDto 메뉴 생성 요청 DTO
+	 * @param authentication 인증 정보
+	 * @return 생성된 메뉴 정보
+	 */
+	@PostMapping("/api/v1/stores/{storeId}/menus")
+	public ResponseEntity<CommonResponse<MenuResponseDto>> createMenu(
+		@PathVariable Long storeId,
+		@Valid @RequestBody MenuCreateRequestDto requestDto,
+		Authentication authentication) {
+		// 현재 인증된 사용자 정보 가져오기
+		String userId = authentication.getName();
+		Menu savedMenu = menuService.createMenu(userId, storeId, requestDto);
+		MenuResponseDto responseDto = MenuResponseDto.fromEntity(savedMenu);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(CommonResponse.<MenuResponseDto>builder()
-                        .success(true)
-                        .status(HttpStatus.CREATED.value())
-                        .message("메뉴가 성공적으로 생성되었습니다.")
-                        .result(responseDto)
-                        .build());
-    }
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(CommonResponse.of(
+				true,
+				HttpStatus.CREATED.value(),
+				"메뉴가 성공적으로 생성되었습니다.",
+				responseDto));
+	}
 
-    /**
-     * 메뉴를 수정
-     * 요청한 사용자가 가게의 소유자인 경우에만 메뉴 수정이 가능
-     *
-     * @param storeId 메뉴가 속한 가게 ID
-     * @param menuId 수정할 메뉴 ID
-     * @param requestDto 메뉴 수정 요청 DTO
-     * @param authentication 인증 정보
-     * @return 수정된 메뉴 정보
-     */
-    @PutMapping("/api/v1/stores/{storeId}/menus/{menuId}")
-    public ResponseEntity<CommonResponse<MenuResponseDto>> updateMenu(
-            @PathVariable Long storeId,
-            @PathVariable Long menuId,
-            @Valid @RequestBody MenuUpdateRequestDto requestDto,
-            Authentication authentication) {
-        // 현재 인증된 사용자 정보 가져오기
-        String userId = authentication.getName();
-        Menu updatedMenu = menuService.updateMenu(userId, storeId, menuId, requestDto);
-        MenuResponseDto responseDto = MenuResponseDto.fromEntity(updatedMenu);
+	/**
+	 * 메뉴를 수정
+	 * 요청한 사용자가 가게의 소유자인 경우에만 메뉴 수정이 가능
+	 *
+	 * @param storeId 메뉴가 속한 가게 ID
+	 * @param menuId 수정할 메뉴 ID
+	 * @param requestDto 메뉴 수정 요청 DTO
+	 * @param authentication 인증 정보
+	 * @return 수정된 메뉴 정보
+	 */
+	@PutMapping("/api/v1/stores/{storeId}/menus/{menuId}")
+	public ResponseEntity<CommonResponse<MenuResponseDto>> updateMenu(
+		@PathVariable Long storeId,
+		@PathVariable Long menuId,
+		@Valid @RequestBody MenuUpdateRequestDto requestDto,
+		Authentication authentication) {
+		// 현재 인증된 사용자 정보 가져오기
+		String userId = authentication.getName();
+		Menu updatedMenu = menuService.updateMenu(userId, storeId, menuId, requestDto);
+		MenuResponseDto responseDto = MenuResponseDto.fromEntity(updatedMenu);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.<MenuResponseDto>builder()
-                        .success(true)
-                        .status(HttpStatus.OK.value())
-                        .message("메뉴가 성공적으로 수정되었습니다.")
-                        .result(responseDto)
-                        .build());
-    }
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(CommonResponse.of(
+				true,
+				HttpStatus.OK.value(),
+				"메뉴가 성공적으로 수정되었습니다.",
+				responseDto));
+	}
 
-    /**
-     * 메뉴를 삭제
-     * 요청한 사용자가 가게의 소유자인 경우에만 메뉴 삭제가 가능
-     *
-     * @param storeId 메뉴가 속한 가게 ID
-     * @param menuId 삭제할 메뉴 ID
-     * @param authentication 인증 정보
-     * @return 삭제 성공 응답
-     */
-    @DeleteMapping("/api/v1/stores/{storeId}/menus/{menuId}")
-    public ResponseEntity<CommonResponse<Void>> deleteMenu(
-            @PathVariable Long storeId,
-            @PathVariable Long menuId,
-            Authentication authentication) {
-        // 현재 인증된 사용자 정보 가져오기
-        String userId = authentication.getName();
-        menuService.deleteMenu(userId, storeId, menuId);
+	/**
+	 * 메뉴를 삭제
+	 * 요청한 사용자가 가게의 소유자인 경우에만 메뉴 삭제가 가능
+	 *
+	 * @param storeId 메뉴가 속한 가게 ID
+	 * @param menuId 삭제할 메뉴 ID
+	 * @param authentication 인증 정보
+	 * @return 삭제 성공 응답
+	 */
+	@DeleteMapping("/api/v1/stores/{storeId}/menus/{menuId}")
+	public ResponseEntity<CommonResponse<Void>> deleteMenu(
+		@PathVariable Long storeId,
+		@PathVariable Long menuId,
+		Authentication authentication) {
+		// 현재 인증된 사용자 정보 가져오기
+		String userId = authentication.getName();
+		menuService.deleteMenu(userId, storeId, menuId);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.<Void>builder()
-                        .success(true)
-                        .status(HttpStatus.OK.value())
-                        .message("메뉴가 성공적으로 삭제되었습니다.")
-                        .build());
-    }
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(CommonResponse.of(
+				true,
+				HttpStatus.OK.value(),
+				"메뉴가 성공적으로 삭제되었습니다.",
+				null));
+	}
 }
