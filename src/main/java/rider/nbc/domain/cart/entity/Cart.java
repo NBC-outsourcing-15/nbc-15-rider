@@ -1,11 +1,15 @@
 package rider.nbc.domain.cart.entity;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.redis.core.RedisHash;
 import rider.nbc.domain.cart.vo.MenuItem;
 
 /**
@@ -14,11 +18,15 @@ import rider.nbc.domain.cart.vo.MenuItem;
  */
 @Getter
 @NoArgsConstructor
-public class Cart{
-	@Column
+@RedisHash("cart")
+public class Cart implements Serializable {
+
+	@Serial
+	private static final long serialVersionUID = 1L;
+
+	@Id
 	private Long userid;
 
-	@Column
 	private Long storeId;
 
 	// TODO 고쳐야 됨

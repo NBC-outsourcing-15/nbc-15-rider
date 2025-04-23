@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import rider.nbc.domain.cart.dto.request.CartAddRequestDto;
 import rider.nbc.domain.cart.dto.response.CartItemResponseDto;
+import rider.nbc.domain.cart.entity.Cart;
 import rider.nbc.domain.cart.exception.CartException;
 import rider.nbc.domain.cart.repository.CartRedisRepository;
 import rider.nbc.domain.cart.vo.MenuItem;
@@ -54,8 +55,12 @@ class CartServiceTest {
         Long authId = 1L;
         MenuItem menuItem = new MenuItem(menu.getId(), requestDto.getQuantity());
 
-        given(menuRepository.findById(requestDto.getMenuId())).willReturn(Optional.of(menu));
-        willDoNothing().given(cartRedisRepository).addCartItem(eq(authId), eq(store.getId()), any(MenuItem.class));
+        Cart cart = new Cart(1L, store.getId(), menuItem);
+
+
+        given(menuRepository.findByIdOrElseThrow(requestDto.getMenuId())).willReturn(menu);
+        given(cartRedisRepository.findById(authId)).willReturn(Optional.empty());
+        given(cartRedisRepository.save(any(Cart.class))).willReturn(cart);
         //when
         CartItemResponseDto result = cartService.addCartItem(authId, requestDto);
 
