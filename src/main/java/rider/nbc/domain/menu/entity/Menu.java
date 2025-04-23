@@ -1,5 +1,10 @@
 package rider.nbc.domain.menu.entity;
 
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,6 +32,8 @@ import rider.nbc.global.config.TimeBaseEntity;
 @EqualsAndHashCode(of = "id", callSuper = false)
 @Builder
 @Entity
+@SQLDelete(sql = "UPDATE menus SET deleted_at = NOW() WHERE menu_id = ?")
+@SQLRestriction("deleted_at is NULL")
 @Table(name = "menus")
 public class Menu extends TimeBaseEntity {
 	@Id
@@ -49,6 +56,9 @@ public class Menu extends TimeBaseEntity {
 	@ManyToOne
 	@JoinColumn(name = "store_id")
 	private Store store;
+
+	@Column
+	private LocalDateTime deletedAt; // soft delete column
 
 	/**
 	 * 메뉴 정보 업데이트
