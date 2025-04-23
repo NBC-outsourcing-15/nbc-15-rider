@@ -1,7 +1,10 @@
 package rider.nbc.domain.store.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,30 +37,24 @@ public class Store extends TimeBaseEntity {
 	@Column
 	private String category;
 
-	// TODO 값 타입으로 넣을거임
-	@Column
-	private String address;
+	@Embedded
+	private StoreAddress address;
 
-	@Column(nullable = true)
+	@Column
 	private String storePictureUrl;
 
 	@Column
-	private String content;
+	private String introduce;
 
 	@Column
 	private Long minDeliveryPrice;
 
-	// TODO 운영시간 변경 예정
-	@Column
-	private String operatingHours;
+	@Embedded
+	private OperatingHours operatingHours;
 
-	// TODO 휴무일 변경 예정
 	@Column
-	private String holidays;
-
-	// @Column
-	// @Enumerated(value = EnumType.STRING)
-	// private StoreStatus storeStatus;
+	@Enumerated(value = EnumType.STRING)
+	private StoreStatus storeStatus;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "owner_id")

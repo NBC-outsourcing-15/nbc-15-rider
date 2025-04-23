@@ -14,13 +14,14 @@ import rider.nbc.global.exception.BaseException;
 import rider.nbc.global.exception.dto.ValidationError;
 import rider.nbc.global.response.CommonResponse;
 import rider.nbc.global.response.CommonResponses;
+import rider.nbc.global.util.LogUtils;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 	@ExceptionHandler(BaseException.class)
 	public ResponseEntity<CommonResponse<?>> handleBaseException(BaseException baseException) {
-		// LogUtils.logError(baseException);
+		 LogUtils.logError(baseException);
 
 		return ResponseEntity.status(baseException.getHttpStatus())
 			.body(CommonResponse.of(false, baseException.getHttpStatus().value(), baseException.getMessage()));
@@ -28,7 +29,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<CommonResponses<ValidationError>> inputValidationExceptionHandler(BindingResult result) {
-		// log.error(result.getFieldErrors().toString());
+		 log.error(result.getFieldErrors().toString());
 
 		List<ValidationError> validationErrors = result.getFieldErrors().stream()
 			.map(fieldError -> ValidationError.builder()

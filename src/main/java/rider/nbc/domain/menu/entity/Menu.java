@@ -37,20 +37,12 @@ public class Menu extends TimeBaseEntity {
 	@Column // TODO 변경 예정
 	private String category;
 
-	// TODO 값 타입으로 넣을거임
-	@Column
-	private String address;
-
 	@Column
 	private Long price;
 
 	@Column
 	private String menuPictureUrl;
-
-	// @Column
-	// @Enumerated(value = EnumType.STRING)
-	// private MenuStatus menuStatus;
-
+	
 	@ManyToOne
 	@JoinColumn(name = "store_id")
 	private Store store;
