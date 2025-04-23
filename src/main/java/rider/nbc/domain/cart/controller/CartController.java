@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import rider.nbc.domain.cart.dto.request.CartAddRequestDto;
@@ -14,7 +13,6 @@ import rider.nbc.domain.cart.dto.response.CartListResponseDto;
 import rider.nbc.domain.cart.service.CartService;
 import rider.nbc.global.auth.AuthUser;
 import rider.nbc.global.response.CommonResponse;
-import rider.nbc.global.response.CommonResponses;
 
 /**
  * @author    : kimjungmin

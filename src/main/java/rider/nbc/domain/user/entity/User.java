@@ -10,6 +10,8 @@ import rider.nbc.domain.user.exception.UserException;
 import rider.nbc.domain.user.exception.UserExceptionCode;
 import rider.nbc.global.config.TimeBaseEntity;
 
+import static rider.nbc.domain.store.constant.StoreConstants.ROLE_CEO;
+
 /**
  * @author : kimjungmin
  * Created on : 2025. 4. 22.

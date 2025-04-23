@@ -1,5 +1,6 @@
 package rider.nbc.domain.store.fixture;
 
+import rider.nbc.domain.user.entity.Role;
 import rider.nbc.domain.user.entity.User;
 
 /**
@@ -12,7 +13,7 @@ public class OwnerFixture {
 		return User.builder()
 			.id(1L)
 			.email("test@example.com")
-			.role(role)
+			.role(Role.valueOf(role))
 			.build();
 	}
 
@@ -22,7 +23,7 @@ public class OwnerFixture {
 		return User.builder()
 			.id(id)
 			.email(email)
-			.role(role)
+			.role(Role.valueOf(role))
 			.build();
 	}
 }
