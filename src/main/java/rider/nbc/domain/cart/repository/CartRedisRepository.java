@@ -1,8 +1,9 @@
 package rider.nbc.domain.cart.repository;
 
-import rider.nbc.domain.cart.vo.MenuItem;
+import org.springframework.data.repository.CrudRepository;
+import rider.nbc.domain.cart.entity.Cart;
 
-public interface CartRedisRepository {
+public interface CartRedisRepository extends CrudRepository<Cart, Long> {
 
-    void addCartItem(Long userId, Long storeId, MenuItem value);
+    //void addCartItem(Long userId, Long storeId, MenuItem value);
 }
