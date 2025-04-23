@@ -20,6 +20,8 @@ import rider.nbc.domain.payment.exception.PaymentException;
 import rider.nbc.domain.payment.exception.code.PaymentExceptionCode;
 import rider.nbc.domain.payment.repository.PaymentRepository;
 import rider.nbc.domain.user.entity.User;
+import rider.nbc.domain.user.exception.UserException;
+import rider.nbc.domain.user.exception.UserExceptionCode;
 import rider.nbc.domain.user.repository.UserRepository;
 
 import java.net.URI;
@@ -56,7 +58,7 @@ public class PaymentService {
     @Transactional
     public PaymentResponse requestPayment(PaymentRequest paymentRequest, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(()-> new UserException(UserExceptionCode.USER_NOT_FOUND));
 
         Payment payment = Payment.builder()
                 .orderId(UUID.randomUUID().toString())

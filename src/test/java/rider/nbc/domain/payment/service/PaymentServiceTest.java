@@ -25,6 +25,8 @@ import rider.nbc.domain.payment.exception.PaymentException;
 import rider.nbc.domain.payment.exception.code.PaymentExceptionCode;
 import rider.nbc.domain.payment.repository.PaymentRepository;
 import rider.nbc.domain.user.entity.User;
+import rider.nbc.domain.user.exception.UserException;
+import rider.nbc.domain.user.exception.UserExceptionCode;
 import rider.nbc.domain.user.repository.UserRepository;
 
 import java.time.LocalDate;
@@ -125,11 +127,11 @@ class PaymentServiceTest {
                     .willReturn(Optional.empty());
 
             //when
-            RuntimeException exception = assertThrows(RuntimeException.class,
+            UserException exception = assertThrows(UserException.class,
                     () -> paymentService.requestPayment(paymentRequest, 1L));
 
             //then
-            assertEquals(null, exception.getMessage());
+            assertEquals(UserExceptionCode.USER_NOT_FOUND, exception.getErrorCode());
         }
 
     }
