@@ -10,6 +10,8 @@ import lombok.*;
 @Builder
 public class MenuItem {
 	private Long menuId;
+	private Long price;
+	private String name;
     private int quantity;
 	//private List<Integer> options;
 

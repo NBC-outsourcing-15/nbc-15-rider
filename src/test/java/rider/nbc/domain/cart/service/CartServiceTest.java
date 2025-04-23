@@ -51,7 +51,7 @@ class CartServiceTest {
 
         CartAddRequestDto requestDto = new CartAddRequestDto(menu.getId(), 2);
         Long authId = 1L;
-        MenuItem menuItem = new MenuItem(menu.getId(), requestDto.getQuantity());
+        MenuItem menuItem = new MenuItem(menu.getId(), menu.getPrice(), "밥", requestDto.getQuantity());
 
         Cart cart = new Cart(1L, store.getId(), menuItem);
 

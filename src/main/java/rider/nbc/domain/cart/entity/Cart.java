@@ -35,4 +35,9 @@ public class Cart implements Serializable {
 		this.storeId = storeId;
 		this.menus.add(menuItem);
 	}
+
+	public void updateCart(Long storeId, List<MenuItem> menuItems){
+		this.storeId =storeId;
+		this.menus = menuItems;
+	}
 }
