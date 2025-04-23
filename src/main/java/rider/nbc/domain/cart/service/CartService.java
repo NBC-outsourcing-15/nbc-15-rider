@@ -117,7 +117,7 @@ public class CartService {
                 })
                 .toList();
 
-        cart.updateCart(requestDto.getStoreId(), enrichedItems);
+        cart.updateCart(menus.get(0).getStore().getId(), enrichedItems);
         //저장
         Cart updatedCart = cartRedisRepository.save(cart);
         return new CartListResponseDto(updatedCart);
@@ -135,6 +135,7 @@ public class CartService {
                 .orElseThrow(() -> new CartException(CartExceptionCode.NO_CONTENTS));
 
         cart.removeMenuItem(itemId);
+        cartRedisRepository.save(cart);
         return new CartListResponseDto(cart);
     }
 
@@ -143,6 +144,6 @@ public class CartService {
      * @param authId 로그인 ID
      */
     public void deleteCart(Long authId){
-        cartRedisRepository.removeCartByUserid(authId);
+        cartRedisRepository.deleteById(authId);
     }
 }

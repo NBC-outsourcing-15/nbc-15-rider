@@ -73,7 +73,7 @@ public class CartController {
                 .body(CommonResponse.<CartListResponseDto>builder()
                         .success(true)
                         .status(HttpStatus.OK.value())
-                        .message("장바구니 조회")
+                        .message("장바구니 수정완료")
                         .result(cartService.updateCart(authUser.getId(), requestDto))
                         .build());
     }
@@ -87,7 +87,7 @@ public class CartController {
                 .body(CommonResponse.<CartListResponseDto>builder()
                         .success(true)
                         .status(HttpStatus.OK.value())
-                        .message("장바구니 조회")
+                        .message("장바구니 수정완료")
                         .result(cartService.deleteSelectedMenu(authUser.getId(), itemId))
                         .build());
     }
@@ -101,7 +101,7 @@ public class CartController {
                 .body(CommonResponse.<Void>builder()
                         .success(true)
                         .status(HttpStatus.OK.value())
-                        .message("장바구니 조회")
+                        .message("장바구니 초기화")
                         .build());
     }
 
