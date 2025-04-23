@@ -54,7 +54,7 @@ public class CartRedisRepositoryImpl implements CartRedisRepository{
             throw new CartException(CartExceptionCode.CART_SAVE_FAILED);
         }
         ops.set(key, updatedCart, Duration.ofHours(24));
-        redisTemplate.opsForValue().set(key, String.valueOf(value));
+        //redisTemplate.opsForValue().set(key, String.valueOf(value));
     }
 
     public Cart getCartData(Long userId) {
