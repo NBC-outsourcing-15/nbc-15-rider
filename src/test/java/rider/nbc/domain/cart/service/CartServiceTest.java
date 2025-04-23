@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import rider.nbc.domain.cart.dto.request.CartAddRequestDto;
 import rider.nbc.domain.cart.dto.response.CartItemResponseDto;
@@ -14,9 +15,12 @@ import rider.nbc.domain.cart.exception.CartException;
 import rider.nbc.domain.cart.repository.CartRedisRepository;
 import rider.nbc.domain.cart.vo.MenuItem;
 import rider.nbc.domain.menu.entity.Menu;
+import rider.nbc.domain.menu.exception.MenuException;
+import rider.nbc.domain.menu.exception.MenuExceptionCode;
 import rider.nbc.domain.menu.repository.MenuRepository;
 import rider.nbc.domain.store.entity.Store;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -78,12 +82,33 @@ class CartServiceTest {
         Long invalidMenuId = 999L;
         CartAddRequestDto requestDto = new CartAddRequestDto(invalidMenuId, 1);
 
-        given(menuRepository.findById(invalidMenuId)).willReturn(Optional.empty());
+        MenuException menuException = new MenuException(
+
+        given(menuRepository.findByIdOrElseThrow(invalidMenuId)).willThrow(new MenuException(MenuExceptionCode.MENU_NOT_FOUND));
 
         // when, then
-        CartException exception = assertThrows(CartException.class, () ->
+        MenuException exception = assertThrows(MenuException.class, () ->
                 cartService.addCartItem(authId, requestDto));
+        assertEquals("메뉴를 찾을 수 없습니다.", exception.getMessage());
+    }
 
-        assertEquals("장바구니에 담을 수 없는 메뉴입니다.", exception.getMessage());
+    @Test
+    @DisplayName("updateCart 성공 - 모두 같은 가게의 메뉴들 수정")
+    void updateCart_successs(){
+        // given
+        Long userId = 1L;
+        Long storeId = 100L;
+        List<MenuItem> menuItems = List.of(
+                new MenuItem(1L, 8000L,"Burger", 2),
+                new MenuItem(2L, 2000L,"Fries", 1)
+        );
+        List<Menu> menus =List.of(
+                new Menu(),
+                new Menu()
+        );
+
+
+
+
     }
 }

@@ -40,4 +40,9 @@ public class Cart implements Serializable {
 		this.storeId =storeId;
 		this.menus = menuItems;
 	}
+
+	public void removeMenuItem(Long menuId) {
+		this.menus.removeIf(menuItem -> menuItem.getMenuId().equals(menuId));
+	}
+
 }

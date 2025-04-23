@@ -3,7 +3,6 @@ package rider.nbc.domain.cart.vo;
 import jakarta.persistence.Embeddable;
 import lombok.*;
 
-@Embeddable
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,5 +16,10 @@ public class MenuItem {
 
 	public void updateQuantity(int quantity){
 		this.quantity = quantity;
+	}
+
+	public void setInfos(Long price, String name){
+		this.price = price;
+		this.name = name;
 	}
 }

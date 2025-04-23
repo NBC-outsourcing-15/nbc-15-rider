@@ -78,4 +78,31 @@ public class CartController {
                         .build());
     }
 
+    @DeleteMapping("/items/{itemId}")
+    public ResponseEntity<CommonResponse<CartListResponseDto>> deleteSelectedMenu(
+            @AuthenticationPrincipal AuthUser authUser,
+            @PathVariable Long itemId
+    ){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.<CartListResponseDto>builder()
+                        .success(true)
+                        .status(HttpStatus.OK.value())
+                        .message("장바구니 조회")
+                        .result(cartService.deleteSelectedMenu(authUser.getId(), itemId))
+                        .build());
+    }
+
+    @DeleteMapping
+    public ResponseEntity<CommonResponse<Void>> deleteCart(
+            @AuthenticationPrincipal AuthUser authUser
+    ){
+        cartService.deleteCart(authUser.getId());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.<Void>builder()
+                        .success(true)
+                        .status(HttpStatus.OK.value())
+                        .message("장바구니 조회")
+                        .build());
+    }
+
 }
