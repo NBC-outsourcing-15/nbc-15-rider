@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import rider.nbc.domain.cart.vo.MenuItem;
 import rider.nbc.global.config.TimeBaseEntity;
 
@@ -21,6 +22,7 @@ import rider.nbc.global.config.TimeBaseEntity;
 @Getter
 @Entity
 @Table(name = "cart")
+@NoArgsConstructor
 public class Cart extends TimeBaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,4 +38,9 @@ public class Cart extends TimeBaseEntity {
 	@ElementCollection
 	private List<MenuItem> menus = new ArrayList<>();
 
+	public Cart(Long userid, Long storeId, MenuItem menuItem){
+		this.userid = userid;
+		this.storeId = storeId;
+		this.menus.add(menuItem);
+	}
 }
