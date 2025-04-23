@@ -22,6 +22,13 @@ public class CartController {
 
     private CartService cartService;
 
+    /**
+     * [Controller] 장바구니에 메뉴 추가
+     * 
+     * @param cartAddRequestDto 메뉴 품복과 수량
+     * @param authentication 로그인해야함
+     * @return 추가되면 추가된 메뉴 정보 리턴
+     */
     @PostMapping("/items")
     public ResponseEntity<CartItemResponseDto> addCartItem(
             @RequestBody CartAddRequestDto cartAddRequestDto,
