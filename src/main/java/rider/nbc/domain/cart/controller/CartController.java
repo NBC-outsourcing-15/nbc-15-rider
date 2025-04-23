@@ -20,7 +20,7 @@ import rider.nbc.domain.cart.service.CartService;
 @RequiredArgsConstructor
 public class CartController {
 
-    private CartService cartService;
+    private final CartService cartService;
 
     /**
      * [Controller] 장바구니에 메뉴 추가

@@ -16,8 +16,8 @@ import rider.nbc.domain.menu.repository.MenuRepository;
 @RequiredArgsConstructor
 public class CartService {
 
-    private CartRedisRepository cartRedisRepository;
-    private MenuRepository menuRepository;
+    private final CartRedisRepository cartRedisRepository;
+    private final MenuRepository menuRepository;
 
     public CartListResponseDto getCartList() {
 
