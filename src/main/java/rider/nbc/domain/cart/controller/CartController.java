@@ -2,14 +2,12 @@ package rider.nbc.domain.cart.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import rider.nbc.domain.cart.dto.request.CartAddRequestDto;
 import rider.nbc.domain.cart.dto.response.CartItemResponseDto;
-import rider.nbc.domain.cart.dto.response.CartListResponseDto;
 import rider.nbc.domain.cart.service.CartService;
 import rider.nbc.global.response.CommonResponse;
 
