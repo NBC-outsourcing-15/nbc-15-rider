@@ -38,8 +38,8 @@ public class PaymentService {
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
 
-    @Value("${payment.toss.test_client_secret_api_key}")
-    private String testSecretApiKey;
+    @Value("${payment.toss.secret_api_key}")
+    private String secretApiKey;
     @Value("${payment.toss.success_url}")
     private String successCallBackUrl;
     @Value("${payment.toss.fail_url}")
@@ -101,8 +101,8 @@ public class PaymentService {
 
         HttpHeaders httpHeaders = new HttpHeaders();
 
-        testSecretApiKey = testSecretApiKey + ":";
-        String encodedAuth = new String(Base64.getEncoder().encode(testSecretApiKey.getBytes(StandardCharsets.UTF_8)));
+        secretApiKey = secretApiKey + ":";
+        String encodedAuth = new String(Base64.getEncoder().encode(secretApiKey.getBytes(StandardCharsets.UTF_8)));
 
         httpHeaders.setBasicAuth(encodedAuth);
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -176,7 +176,7 @@ public class PaymentService {
         URI uri = URI.create(tossOriginUrl + paymentCancelRequest.getPaymentKey() + "/cancel");
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        byte[] secretKeyByte = (testSecretApiKey + ":").getBytes(StandardCharsets.UTF_8);
+        byte[] secretKeyByte = (secretApiKey + ":").getBytes(StandardCharsets.UTF_8);
         httpHeaders.setBasicAuth(new String(Base64.getEncoder().encode(secretKeyByte)));
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
