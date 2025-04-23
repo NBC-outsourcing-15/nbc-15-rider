@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import rider.nbc.global.config.TimeBaseEntity;
 import rider.nbc.global.exception.BaseException;
-import rider.nbc.global.exceptionCode.ExceptionCode;
+//import rider.nbc.global.exceptionCode.ExceptionCode;
 
 /**
  * @author    : kimjungmin
