@@ -1,5 +1,7 @@
 package rider.nbc.domain.store.fixture;
 
+import java.util.ArrayList;
+
 import rider.nbc.domain.store.entity.Store;
 import rider.nbc.domain.user.entity.User;
 
@@ -13,6 +15,7 @@ public class StoreFixture {
 			.id(storeId)
 			.name("Test Store")
 			.owner(owner)
+			.menus(new ArrayList<>())
 			.build();
 	}
 }
