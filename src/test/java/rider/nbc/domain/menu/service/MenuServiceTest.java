@@ -259,4 +259,126 @@ class MenuServiceTest {
 			}
 		}
 	}
+
+	@Nested
+	@DisplayName("deleteMenu 메서드는")
+	class Describe_deleteMenu {
+
+		// 테스트에 사용할 공통 요청
+		String userId = "1";
+		Long storeId = 1L;
+		Long menuId = 1L;
+
+		@Nested
+		@DisplayName("유효한 사용자와 가게 소유자가 요청하면")
+		class Context_with_valid_user_and_store_owner {
+
+			@Test
+			@DisplayName("메뉴를 삭제한다")
+			void it_deletes_menu() {
+				// Given
+				User owner = defaultUser("CEO");
+				Store store = StoreFixture.storeFrom(storeId, owner);
+				Menu menu = MenuFixture.menuFrom(menuId, store);
+
+				when(userRepository.findByOwnerIdOrThrow(anyLong())).thenReturn(owner);
+				when(storeRepository.findStoreWithMenusByIdOrElseThrow(storeId)).thenReturn(store);
+				when(menuRepository.findByIdOrElseThrow(menuId)).thenReturn(menu);
+
+				// When
+				menuService.deleteMenu(userId, storeId, menuId);
+
+				// Then
+				verify(menuRepository).delete(menu);
+			}
+		}
+
+		@Nested
+		@DisplayName("존재하지 않는 가게 ID가 주어지면")
+		class Context_with_non_existent_store_id {
+
+			@Test
+			@DisplayName("STORE_NOT_FOUND 예외를 던진다")
+			void it_throws_store_not_found_exception() {
+				// Given
+				User owner = defaultUser("CEO");
+				when(userRepository.findByOwnerIdOrThrow(anyLong())).thenReturn(owner);
+				when(storeRepository.findStoreWithMenusByIdOrElseThrow(storeId))
+					.thenThrow(new StoreException(StoreExceptionCode.NOT_FOUND_STORE));
+
+				// When & Then
+				assertThatThrownBy(() -> menuService.deleteMenu(userId, storeId, menuId))
+					.isInstanceOf(StoreException.class)
+					.hasMessage(StoreExceptionCode.NOT_FOUND_STORE.getMessage());
+			}
+		}
+
+		@Nested
+		@DisplayName("가게 소유자가 아닌 사용자가 요청하면")
+		class Context_with_non_owner_user {
+
+			@Test
+			@DisplayName("NOT_STORE_OWNER 예외를 던진다")
+			void it_throws_not_store_owner_exception() {
+				// Given
+				User owner = defaultUser("CEO");
+				User nonOwner = OwnerFixture.UserFrom(owner.getId() + 1, "USER");
+				Store store = StoreFixture.storeFrom(storeId, owner);
+
+				when(userRepository.findByOwnerIdOrThrow(anyLong())).thenReturn(nonOwner);
+				when(storeRepository.findStoreWithMenusByIdOrElseThrow(storeId)).thenReturn(store);
+
+				// When & Then
+				assertThatThrownBy(() -> menuService.deleteMenu(userId, storeId, menuId))
+					.isInstanceOf(StoreException.class)
+					.hasMessage(StoreExceptionCode.NOT_STORE_OWNER.getMessage());
+			}
+		}
+
+		@Nested
+		@DisplayName("존재하지 않는 메뉴 ID가 주어지면")
+		class Context_with_non_existent_menu_id {
+
+			@Test
+			@DisplayName("MENU_NOT_FOUND 예외를 던진다")
+			void it_throws_menu_not_found_exception() {
+				// Given
+				User owner = defaultUser("CEO");
+				Store store = StoreFixture.storeFrom(storeId, owner);
+
+				when(userRepository.findByOwnerIdOrThrow(anyLong())).thenReturn(owner);
+				when(storeRepository.findStoreWithMenusByIdOrElseThrow(storeId)).thenReturn(store);
+				when(menuRepository.findByIdOrElseThrow(menuId))
+					.thenThrow(new MenuException(MenuExceptionCode.MENU_NOT_FOUND));
+
+				// When & Then
+				assertThatThrownBy(() -> menuService.deleteMenu(userId, storeId, menuId))
+					.isInstanceOf(MenuException.class)
+					.hasMessage(MenuExceptionCode.MENU_NOT_FOUND.getMessage());
+			}
+		}
+
+		@Nested
+		@DisplayName("메뉴가 해당 가게에 속하지 않으면")
+		class Context_with_menu_not_belonging_to_store {
+
+			@Test
+			@DisplayName("NOT_CONTAINS_MENU 예외를 던진다")
+			void it_throws_not_contains_menu_exception() {
+				// Given
+				User owner = defaultUser("CEO");
+				Store store = StoreFixture.storeFrom(storeId, owner);
+				Menu menu = MenuFixture.defaultMenu(menuId);
+
+				when(userRepository.findByOwnerIdOrThrow(anyLong())).thenReturn(owner);
+				when(storeRepository.findStoreWithMenusByIdOrElseThrow(storeId)).thenReturn(store);
+				when(menuRepository.findByIdOrElseThrow(menuId)).thenReturn(menu);
+
+				// When & Then
+				assertThatThrownBy(() -> menuService.deleteMenu(userId, storeId, menuId))
+					.isInstanceOf(StoreException.class)
+					.hasMessage(StoreExceptionCode.NOT_CONTAINS_MENU.getMessage());
+			}
+		}
+	}
 }
