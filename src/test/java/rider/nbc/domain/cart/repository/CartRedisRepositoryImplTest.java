@@ -6,15 +6,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.redis.connection.RedisConfiguration;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
 import rider.nbc.domain.cart.entity.Cart;
-import rider.nbc.domain.cart.exception.CartException;
+
 import rider.nbc.domain.cart.vo.MenuItem;
 
 import java.util.List;
@@ -74,6 +72,76 @@ class CartRedisRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("addCartItem 성공 - 가게 ID 다름 > 장바구니 덮어쓰기")
+    void addCartItem_CartExists_DifferentStore() throws JsonProcessingException {
+        // given
+        Long userId = 1L;
+        Long originalStoreId = 200L;
+        Long newStoreId = 100L;
+
+        Cart existingCart = new Cart(userId, originalStoreId, new MenuItem(1L, 1));
+        given(valueOperations.get("cart:" + userId)).willReturn(objectMapper.writeValueAsString(existingCart));
+
+        MenuItem newItem = new MenuItem(2L, 3);
+
+        // when
+        cartRedisRepository.addCartItem(userId, newStoreId, newItem);
+
+        // then
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(valueOperations, atLeastOnce()).set(eq("cart:" + userId), captor.capture(), any());
+
+        String saved = captor.getValue();
+        assertTrue(saved.contains("\"storeId\":100"));
+        assertTrue(saved.contains("\"menuId\":2"));
+        assertFalse(saved.contains("\"menuId\":1")); // 기존 아이템 없어야 함
+    }
+
+    @Test
+    @DisplayName("addCartItem 성공 - 같은 가게 + 새로운 메뉴 > 뒤에 붙이기")
+    void addCartItem_SameStore_NewMenu() throws JsonProcessingException {
+        Long userId = 1L;
+        Long storeId = 100L;
+
+        Cart existingCart = new Cart(userId, storeId, new MenuItem(1L, 2)); // 기존 메뉴 있음
+        given(valueOperations.get("cart:" + userId)).willReturn(objectMapper.writeValueAsString(existingCart));
+
+        MenuItem newItem = new MenuItem(2L, 1); // 새 메뉴
+
+        cartRedisRepository.addCartItem(userId, storeId, newItem);
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(valueOperations, atLeastOnce()).set(eq("cart:" + userId), captor.capture(), any());
+
+        String saved = captor.getValue();
+        assertTrue(saved.contains("\"menuId\":1"));
+        assertTrue(saved.contains("\"menuId\":2")); // 두 메뉴 다 있어야 함
+    }
+
+    @Test
+    @DisplayName("addCartItem 성공 - 같은 가게 + 같은 메뉴 > 수량 덮어쓰기")
+    void addCartItem_SameStore_SameMenu() throws JsonProcessingException {
+        Long userId = 1L;
+        Long storeId = 100L;
+
+        MenuItem existing = new MenuItem(1L, 2);
+        Cart existingCart = new Cart(userId, storeId, existing);
+        given(valueOperations.get("cart:" + userId)).willReturn(objectMapper.writeValueAsString(existingCart));
+
+        MenuItem newItem = new MenuItem(1L, 5); // 같은 메뉴, 수량 변경
+
+        cartRedisRepository.addCartItem(userId, storeId, newItem);
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(valueOperations, atLeastOnce()).set(eq("cart:" + userId), captor.capture(), any());
+
+        String saved = captor.getValue();
+        assertTrue(saved.contains("\"menuId\":1"));
+        assertTrue(saved.contains("\"quantity\":5")); // 수량이 5로 덮어써졌는지 확인
+    }
+
+
+    @Test
     @DisplayName("getCartData 성공 - 장바구니 불러오기")
     void getCartData_CartExists() throws JsonProcessingException {
         //given
@@ -104,4 +172,5 @@ class CartRedisRepositoryImplTest {
 
         assertNull(result);
     }
+
 }
