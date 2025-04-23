@@ -35,9 +35,9 @@ public class Order extends TimeBaseEntity {
 	@Enumerated(EnumType.STRING)
 	private OrderStatus orderStatus;
 
-	@OneToOne
-	@JoinColumn(name = "cart_id")
-	private Cart cart;
+	//	@OneToOne
+	//	@JoinColumn(name = "cart_id")
+	//	private Cart cart;
 
 	public Order(Cart cart) {
 
