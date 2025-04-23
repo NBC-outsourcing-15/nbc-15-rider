@@ -63,9 +63,15 @@ public class User extends TimeBaseEntity {
         this.status = UserStatus.DELETE;
     }
 
+
     public void validateIsActive() {
         if (this.status != UserStatus.ACTIVE) {
             throw new UserException(UserExceptionCode.USER_DELETED);
         }
     }
+
+	// Store CEO 확인용 로직
+	public boolean isCEO() {
+		return ROLE_CEO.equals(role);
+	}
 }
