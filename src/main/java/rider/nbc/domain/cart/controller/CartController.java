@@ -1,7 +1,7 @@
 package rider.nbc.domain.cart.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -10,6 +10,8 @@ import rider.nbc.domain.cart.dto.request.CartAddRequestDto;
 import rider.nbc.domain.cart.dto.response.CartItemResponseDto;
 import rider.nbc.domain.cart.dto.response.CartListResponseDto;
 import rider.nbc.domain.cart.service.CartService;
+import rider.nbc.global.response.CommonResponse;
+import rider.nbc.global.response.CommonResponses;
 
 /**
  * @author    : kimjungmin
@@ -30,11 +32,32 @@ public class CartController {
      * @return 추가되면 추가된 메뉴 정보 리턴
      */
     @PostMapping("/items")
-    public ResponseEntity<CartItemResponseDto> addCartItem(
-            @RequestBody CartAddRequestDto cartAddRequestDto,
+    public ResponseEntity<CommonResponse<CartItemResponseDto>> addCartItem(
+            @Valid @RequestBody CartAddRequestDto cartAddRequestDto,
             Authentication authentication
             ){
-        Long userId = Long.parseLong((String) authentication.getPrincipal());
-        return ResponseEntity.status(HttpStatus.OK).body(cartService.addCartItem(userId,cartAddRequestDto));
+        Long userId = Long.parseLong(authentication.getName());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(CommonResponse.<CartItemResponseDto>builder()
+                        .success(true)
+                        .status(HttpStatus.CREATED.value())
+                        .message("메뉴 추가 성공")
+                        .result(cartService.addCartItem(userId,cartAddRequestDto))
+                        .build());
     }
+
+    @GetMapping
+    public ResponseEntity<CommonResponses<CartListResponseDto>> getCartList(
+            Authentication authentication
+    ){
+        Long userId = Long.parseLong(authentication.getName());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponses.<CartListResponseDto>builder()
+                        .success(true)
+                        .status(HttpStatus.OK.value())
+                        .message("장바구니 조회")
+                        .result(cartService.getCartList(userId))
+                        .build());
+    }
+
 }

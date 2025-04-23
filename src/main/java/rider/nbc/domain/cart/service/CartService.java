@@ -19,7 +19,8 @@ public class CartService {
     private final CartRedisRepository cartRedisRepository;
     private final MenuRepository menuRepository;
 
-    public CartListResponseDto getCartList() {
+    public CartListResponseDto getCartList(Long authId) {
+
 
         return null;
     }
