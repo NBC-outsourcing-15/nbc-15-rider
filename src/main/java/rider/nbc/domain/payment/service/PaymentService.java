@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import rider.nbc.domain.payment.constant.PaymentConstants;
+import rider.nbc.domain.payment.dto.request.PaymentCancelRequest;
 import rider.nbc.domain.payment.dto.request.PaymentRequest;
 import rider.nbc.domain.payment.dto.response.PaymentFailResponse;
 import rider.nbc.domain.payment.dto.response.PaymentResponse;
@@ -149,14 +150,13 @@ public class PaymentService {
     /**
      * 결제 완료된 건에 대해서 취소
      *
-     * @param paymentKey   결제 요청에서 toss에서 받은 key
-     * @param cancelReason 취소 이유
+     * @param paymentCancelRequest 결제 요청에서 toss에서 받은 key, 취소 이유
      * @return 결제 요청 정보
-     * @author 이승현
+     * * @author 이승현
      */
     @Transactional
-    public PaymentResponse paymentCancel(String paymentKey, String cancelReason) {
-        Payment payment = paymentRepository.findByPaymentKey(paymentKey)
+    public PaymentResponse paymentCancel(PaymentCancelRequest paymentCancelRequest) {
+        Payment payment = paymentRepository.findByPaymentKey(paymentCancelRequest.getPaymentKey())
                 .orElseThrow(() -> new PaymentException(PaymentExceptionCode.PAYMENT_REQUEST_NOT_FOUND));
 
         if (payment.getPaySuccessYn() == null || !payment.getPaySuccessYn().equals(PaymentConstants.SUCCESS_Y)) {
@@ -171,7 +171,7 @@ public class PaymentService {
             throw new PaymentException(PaymentExceptionCode.PAYMENT_CANCEL_ERROR);
         }
 
-        URI uri = URI.create(tossOriginUrl + paymentKey + "/cancel");
+        URI uri = URI.create(tossOriginUrl + paymentCancelRequest.getPaymentKey() + "/cancel");
 
         HttpHeaders httpHeaders = new HttpHeaders();
         byte[] secretKeyByte = (testSecretApiKey + ":").getBytes(StandardCharsets.UTF_8);
@@ -180,7 +180,7 @@ public class PaymentService {
         httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
         JSONObject param = new JSONObject();
-        param.put(PaymentConstants.CANCEL_REASON, cancelReason);
+        param.put(PaymentConstants.CANCEL_REASON, paymentCancelRequest.getCancelReason());
 
         try {
             restTemplate.postForObject(uri,

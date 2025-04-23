@@ -12,9 +12,7 @@ import rider.nbc.domain.payment.enums.OrderNameType;
 import rider.nbc.domain.payment.enums.PayType;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class PaymentRequest {
     @NotNull(message = "결제 수단을 입력해주세요.")
     @Enumerated(EnumType.STRING)
