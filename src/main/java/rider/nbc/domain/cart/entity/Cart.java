@@ -5,8 +5,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
+import org.springframework.data.annotation.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;
@@ -21,7 +20,6 @@ import rider.nbc.domain.cart.vo.MenuItem;
 @RedisHash("cart")
 public class Cart implements Serializable {
 
-	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Id
