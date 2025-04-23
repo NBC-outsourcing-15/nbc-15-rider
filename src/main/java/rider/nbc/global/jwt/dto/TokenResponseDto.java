@@ -1,4 +1,4 @@
-package rider.nbc.global.jwt;
+package rider.nbc.global.jwt.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
