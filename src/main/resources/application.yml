@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: NBC-15
+  profiles:
+    active: local

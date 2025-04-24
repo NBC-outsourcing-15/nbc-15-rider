@@ -19,7 +19,7 @@ import static rider.nbc.domain.store.constant.StoreConstants.ROLE_CEO;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @Entity
 @Table(name = "users")
 public class User extends TimeBaseEntity {
@@ -80,4 +80,14 @@ public class User extends TimeBaseEntity {
 	public boolean isCEO() {
 		return ROLE_CEO.equals(role);
 	}
+
+    // 결제 성공으로 인한 포인트 추가
+    public void plusPoint(Long amount) {
+        this.point += amount;
+    }
+
+    // 결제 취소로 인한 포인트 차감
+    public void minusPoint(Long amount) {
+        this.point -= amount;
+    }
 }

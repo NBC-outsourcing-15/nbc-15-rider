@@ -13,17 +13,17 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/delivery
     username: root
-    password: qwer1234
+    password: mysqlpassword3306
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
       ddl-auto: update
-      properties:
-        hibernate:
-          format_sql: debug
-          show_sql: debug
-          use_sql_comments: debug
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        show-sql: true
+        format-sql: true
 
 jwt:
   secret-key: yourSuperSecretKey1234567890yourSuperSecretKey1234567890

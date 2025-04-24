@@ -5,7 +5,7 @@ package rider.nbc.domain.order.enums;
  * Created on : 2025. 4. 22.
  */
 public enum OrderStatus {
-	WAITING, COOKING, DONE;
+	WAITING, COOKING, DONE, CANCELED;
 
 	// public static OrderStatus of(String status) {
 	// 	return Arrays.stream(OrderStatus.values())

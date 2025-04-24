@@ -1,39 +1,52 @@
 package rider.nbc.domain.cart.entity;
 
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import org.springframework.data.annotation.Id;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.TimeToLive;
 import rider.nbc.domain.cart.vo.MenuItem;
-import rider.nbc.global.config.TimeBaseEntity;
 
 /**
  * @author    : kimjungmin
  * Created on : 2025. 4. 22.
  */
 @Getter
-@Entity
-@Table(name = "cart")
-public class Cart extends TimeBaseEntity {
+@NoArgsConstructor
+@RedisHash("cart")
+public class Cart implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Long userId;
 
-	@Column
-	private Long userid;
-
-	@Column
 	private Long storeId;
 
 	// TODO 고쳐야 됨
-	@ElementCollection
 	private List<MenuItem> menus = new ArrayList<>();
+
+	@TimeToLive
+	private Long ttl = 86400L;
+
+	public Cart(Long userid, Long storeId, MenuItem menuItem){
+		this.userId = userid;
+		this.storeId = storeId;
+		this.menus.add(menuItem);
+	}
+
+	public void updateCart(Long storeId, List<MenuItem> menuItems){
+		this.storeId =storeId;
+		this.menus = menuItems;
+	}
+
+	public void removeMenuItem(Long menuId) {
+		this.menus.removeIf(menuItem -> menuItem.getMenuId().equals(menuId));
+	}
 
 }
