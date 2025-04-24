@@ -1,22 +1,18 @@
 package rider.nbc.domain.cart.service;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import rider.nbc.domain.cart.dto.request.CartAddRequestDto;
 import rider.nbc.domain.cart.dto.request.CartUpdateRequestDto;
 import rider.nbc.domain.cart.dto.response.CartItemResponseDto;
 import rider.nbc.domain.cart.dto.response.CartListResponseDto;
-import rider.nbc.domain.cart.entity.Cart;
+import rider.nbc.domain.cart.vo.Cart;
 import rider.nbc.domain.cart.exception.CartException;
 import rider.nbc.domain.cart.repository.CartRedisRepository;
 import rider.nbc.domain.cart.vo.MenuItem;

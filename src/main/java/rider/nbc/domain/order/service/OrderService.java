@@ -3,7 +3,7 @@ package rider.nbc.domain.order.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import rider.nbc.domain.cart.entity.Cart;
+import rider.nbc.domain.cart.vo.Cart;
 import rider.nbc.domain.cart.exception.CartException;
 import rider.nbc.domain.cart.exception.CartExceptionCode;
 import rider.nbc.domain.cart.repository.CartRedisRepository;

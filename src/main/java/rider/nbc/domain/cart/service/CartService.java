@@ -7,7 +7,7 @@ import rider.nbc.domain.cart.dto.request.CartAddRequestDto;
 import rider.nbc.domain.cart.dto.request.CartUpdateRequestDto;
 import rider.nbc.domain.cart.dto.response.CartItemResponseDto;
 import rider.nbc.domain.cart.dto.response.CartListResponseDto;
-import rider.nbc.domain.cart.entity.Cart;
+import rider.nbc.domain.cart.vo.Cart;
 import rider.nbc.domain.cart.exception.CartException;
 import rider.nbc.domain.cart.exception.CartExceptionCode;
 import rider.nbc.domain.cart.repository.CartRedisRepository;

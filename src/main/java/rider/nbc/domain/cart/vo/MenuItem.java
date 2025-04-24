@@ -1,6 +1,5 @@
 package rider.nbc.domain.cart.vo;
 
-import jakarta.persistence.Embeddable;
 import lombok.*;
 
 @Getter
@@ -12,7 +11,6 @@ public class MenuItem {
 	private Long price;
 	private String name;
     private int quantity;
-	// code
 
 	public void updateQuantity(int quantity){
 		this.quantity = quantity;

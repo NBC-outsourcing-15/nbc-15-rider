@@ -1,4 +1,4 @@
-package rider.nbc.domain.cart.entity;
+package rider.nbc.domain.cart.vo;
 
 
 import java.io.Serializable;
@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
-import rider.nbc.domain.cart.vo.MenuItem;
 
 /**
  * @author    : kimjungmin
