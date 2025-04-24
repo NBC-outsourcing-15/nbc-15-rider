@@ -124,4 +124,11 @@ public class UserService {
                 .phone(user.getPhone())
                 .build();
     }
+
+    @Transactional
+    public void updatePassword(Long userId, UpdatePasswordRequestDto request) {
+        User user = userRepository.findActiveByIdOrThrow(userId);
+        user.validatePassword(request.getCurrentPassword(), passwordEncoder); // 현재 비밀번호 확인
+        user.changePassword(request.getNewPassword(), passwordEncoder); // 새 비밀번호 설정
+    }
 }

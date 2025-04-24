@@ -11,8 +11,6 @@ import rider.nbc.domain.user.exception.UserExceptionCode;
 import rider.nbc.domain.user.repository.UserRepository;
 import rider.nbc.global.config.TimeBaseEntity;
 
-import static rider.nbc.domain.store.constant.StoreConstants.ROLE_CEO;
-
 /**
  * @author : kimjungmin
  * Created on : 2025. 4. 22.
@@ -77,6 +75,10 @@ public class User extends TimeBaseEntity {
         this.phone = phone;
     }
 
+    public void changePassword(String newPassword, PasswordEncoder encoder) {
+        this.password = encoder.encode(newPassword);
+    }
+
     public void softDelete() {
         this.status = UserStatus.DELETE;
     }
@@ -88,10 +90,10 @@ public class User extends TimeBaseEntity {
         }
     }
 
-	// Store CEO 확인용 로직
-	public boolean isCEO() {
-		return role.equals(Role.ROLE_CEO);
-	}
+    // Store CEO 확인용 로직
+    public boolean isCEO() {
+        return role.equals(Role.ROLE_CEO);
+    }
 
     // 결제 성공으로 인한 포인트 추가
     public void plusPoint(Long amount) {
