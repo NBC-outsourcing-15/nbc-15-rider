@@ -15,7 +15,8 @@ public enum OrderExceptionCode {
     CART_SAVE_FAILED(false, HttpStatus.INTERNAL_SERVER_ERROR, "장바구니 저장 실패"),
 
     INVALID_ORDER_ID(false, HttpStatus.NOT_FOUND, "유효한 주문 번호가 아닙니다."),
-    NOT_OWNER(false, HttpStatus.UNAUTHORIZED, "해당 가게 사장님만 주문 상태를 변경할 수 있어요.");
+    NOT_OWNER(false, HttpStatus.UNAUTHORIZED, "해당 가게 사장님만 주문 상태를 변경할 수 있어요."),
+    CANT_CHANGE_CANCELED(false, HttpStatus.BAD_REQUEST, "취소된 주문은 상태를 변경할 수 없습니다.");
 
     private final boolean isSuccess;
     private final HttpStatus httpStatus;
