@@ -1,131 +1,131 @@
 package rider.nbc.global.jwt;
 
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.Date;
-
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.MacAlgorithm;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.MacAlgorithm;
 import jakarta.annotation.PostConstruct;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import rider.nbc.domain.user.entity.Role;
 import rider.nbc.global.jwt.dto.TokenResponseDto;
 import rider.nbc.global.jwt.jwtException.JwtAuthenticationException;
 import rider.nbc.global.jwt.jwtException.JwtExceptionCode;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.Date;
 
 @Component
 @NoArgsConstructor
 public class JwtTokenProvider {
 
-	@Value("${jwt.secret-key}")
-	private String secret;
+    private final MacAlgorithm algorithm = Jwts.SIG.HS256;
+    @Value("${jwt.secret-key}")
+    private String secret;
+    @Value("${jwt.access-token-expiration}")
+    private long accessTokenExpiration;
+    @Value("${jwt.refresh-token-expiration}")
+    private long refreshTokenExpiration;
+    private SecretKey key;
 
-	@Value("${jwt.access-token-expiration}")
-	private long accessTokenExpiration;
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
 
-	@Value("${jwt.refresh-token-expiration}")
-	private long refreshTokenExpiration;
+    public String generateAccessToken(Long userId, String email, String nickname, Role role) {
+        return createToken(userId.toString(), email, nickname, role, accessTokenExpiration);
+    }
 
-	private SecretKey key;
-	private final MacAlgorithm algorithm = Jwts.SIG.HS256;
+    public String generateRefreshToken(Long userId, String email, String nickname, Role role) {
+        return createToken(userId.toString(), email, nickname, role, refreshTokenExpiration);
+    }
 
-	@PostConstruct
-	public void init() {
-		this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-	}
+    public TokenResponseDto generateTokenPair(Long userId, String email, String nickname, Role role) {
+        String accessToken = generateAccessToken(userId, email, nickname, role);
+        String refreshToken = generateRefreshToken(userId, email, nickname, role);
+        return new TokenResponseDto(accessToken, refreshToken);
+    }
 
-	public String generateAccessToken(Long userId, String email, Role role) {
-		return createToken(userId.toString(), email, role, accessTokenExpiration);
-	}
+    private String createToken(String subject, String email, String nickname, Role role, long expirationMs) {
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + expirationMs);
 
-	public String generateRefreshToken(Long userId, String email, Role role) {
-		return createToken(userId.toString(), email, role, refreshTokenExpiration);
-	}
+        var builder = Jwts.builder()
+                .subject(subject)
+                .issuedAt(now)
+                .expiration(expiry);
 
-	public TokenResponseDto generateTokenPair(Long userId, String email, Role role) {
-		String accessToken = generateAccessToken(userId, email, role);
-		String refreshToken = generateRefreshToken(userId, email, role);
-		return new TokenResponseDto(accessToken, refreshToken);
-	}
+        if (email != null) builder.claim("email", email);
+        if (nickname != null) builder.claim("nickname", nickname);
+        if (role != null) builder.claim("role", role.name());
 
-	private String createToken(String subject, String email, Role role, long expirationMs) {
-		Date now = new Date();
-		Date expiry = new Date(now.getTime() + expirationMs);
+        return builder
+                .signWith(key, algorithm)
+                .compact();
+    }
 
-		var builder = Jwts.builder()
-				.subject(subject)
-				.issuedAt(now)
-				.expiration(expiry);
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token);
+            return true;
 
-		if (email != null) builder.claim("email", email);
-		if (role != null) builder.claim("role", role.name());
+        } catch (ExpiredJwtException e) {
+            throw new JwtAuthenticationException(JwtExceptionCode.EXPIRED_TOKEN);
 
-		return builder
-				.signWith(key, algorithm)
-				.compact();
-	}
+        } catch (SecurityException | MalformedJwtException e) {
+            throw new JwtAuthenticationException(JwtExceptionCode.INVALID_SIGNATURE);
 
-	public boolean validateToken(String token) {
-		try {
-			Jwts.parser()
-					.verifyWith(key)
-					.build()
-					.parseSignedClaims(token);
-			return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new JwtAuthenticationException(JwtExceptionCode.INVALID_TOKEN);
+        }
+    }
 
-		} catch (ExpiredJwtException e) {
-			throw new JwtAuthenticationException(JwtExceptionCode.EXPIRED_TOKEN);
+    private Claims parseClaims(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims(); // 재발급용
+        } catch (Exception e) {
+            throw new JwtAuthenticationException(JwtExceptionCode.INVALID_TOKEN);
+        }
+    }
 
-		} catch (SecurityException | MalformedJwtException e) {
-			throw new JwtAuthenticationException(JwtExceptionCode.INVALID_SIGNATURE);
+    public Long getAuthorId(String token) {
+        return Long.parseLong(parseClaims(token).getSubject());
+    }
 
-		} catch (JwtException | IllegalArgumentException e) {
-			throw new JwtAuthenticationException(JwtExceptionCode.INVALID_TOKEN);
-		}
-	}
+    public String getEmail(String token) {
+        return parseClaims(token).get("email", String.class);
+    }
 
-	private Claims parseClaims(String token) {
-		try {
-			return Jwts.parser()
-					.verifyWith(key)
-					.build()
-					.parseSignedClaims(token)
-					.getPayload();
-		} catch (ExpiredJwtException e) {
-			return e.getClaims(); // 재발급용
-		} catch (Exception e) {
-			throw new JwtAuthenticationException(JwtExceptionCode.INVALID_TOKEN);
-		}
-	}
+    public String getNickname(String token) {
+        return parseClaims(token).get("nickname", String.class);
+    }
 
-	public Long getAuthorId(String token) {
-		return Long.parseLong(parseClaims(token).getSubject());
-	}
+    public Role getRole(String token) {
+        String roleStr = parseClaims(token).get("role", String.class);
+        if (roleStr == null) {
+            throw new JwtAuthenticationException(JwtExceptionCode.INVALID_TOKEN);
+        }
+        return Role.valueOf(roleStr);
+    }
 
-	public String getEmail(String token) {
-		return parseClaims(token).get("email", String.class);
-	}
+    public long getRemainingExpiration(String token) {
+        return parseClaims(token).getExpiration().getTime() - System.currentTimeMillis();
+    }
 
-	public Role getRole(String token) {
-		String roleStr = parseClaims(token).get("role", String.class);
-		if (roleStr == null) {
-			throw new JwtAuthenticationException(JwtExceptionCode.INVALID_TOKEN);
-		}
-		return Role.valueOf(roleStr);
-	}
-
-	public long getRemainingExpiration(String token) {
-		return parseClaims(token).getExpiration().getTime() - System.currentTimeMillis();
-	}
-
-	public Duration getRefreshTokenDuration() {
-		return Duration.ofMillis(refreshTokenExpiration);
-	}
+    public Duration getRefreshTokenDuration() {
+        return Duration.ofMillis(refreshTokenExpiration);
+    }
 
 }
