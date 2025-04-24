@@ -54,8 +54,8 @@ public class OrderController {
             @PathVariable Long orderId,
             @Valid@RequestBody OrderStatusRequestDto statusRequestDto
     ) {
-        orderService.patchOrderStatus(authUser, orderId, statusRequestDto);
+        String result = orderService.patchOrderStatus(authUser, orderId, statusRequestDto);
         return ResponseEntity.ok(CommonResponse.of(true, HttpStatus.OK.value()
-                , "주문의 상태가 변경되었습니다." + statusRequestDto.getOrderStatus()));
+                , "주문이" + result + "으로 변경되었습니다."));
     }
 }

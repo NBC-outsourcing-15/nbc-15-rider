@@ -32,7 +32,7 @@ public class OrderService {
         return orderCreationService.create(user);
     }
 
-    public void patchOrderStatus(AuthUser authUser, Long orderId, OrderStatusRequestDto statusRequestDto) {
+    public String patchOrderStatus(AuthUser authUser, Long orderId, OrderStatusRequestDto statusRequestDto) {
         if( ! authUser.getRole().equals(Role.CEO)){
             throw new OrderException(OrderExceptionCode.NOT_OWNER);
         }
@@ -46,10 +46,14 @@ public class OrderService {
             throw new OrderException(OrderExceptionCode.NOT_OWNER); //틀리면 권한부족
         }
 
+        OrderStatus orderStatus = OrderStatus.of(statusRequestDto.getOrderStatus());
+
         // 맞으면 주문 상태 변경 (같은 상태인건 변경불가능, 취소된 주문도 변경불가능)
         if( order.getOrderStatus().equals(OrderStatus.CANCELED) ){
             throw new OrderException(OrderExceptionCode.CANT_CHANGE_CANCELED);
         }
-        order.updateStatus(statusRequestDto.getOrderStatus());
+        order.updateStatus(orderStatus);
+
+        return orderStatus.getDisplayName();
     }
 }

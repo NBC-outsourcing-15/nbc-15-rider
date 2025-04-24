@@ -1,11 +1,13 @@
 package rider.nbc.domain.order.dto.requestDto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import rider.nbc.domain.order.enums.OrderStatus;
 
 @Getter
 @RequiredArgsConstructor
 public class OrderStatusRequestDto {
-    private final OrderStatus orderStatus;
+
+    @NotBlank(message = "상태 값을 입력해주세요")
+    private final String orderStatus;
 }
