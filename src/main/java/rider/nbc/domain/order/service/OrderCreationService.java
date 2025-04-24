@@ -55,6 +55,7 @@ public class OrderCreationService {
                 .sum();
         // 쿠폰적용 계산?
         checkPaymentAvailable(totalPrice, store.getMinDeliveryPrice(), authUser.getPoint()); //결제 ㄱㄴ?
+        authUser.minusPoint(totalPrice);
 
         Order order = Order.builder()
                 .store(store)
