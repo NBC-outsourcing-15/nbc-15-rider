@@ -5,11 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import rider.nbc.domain.cart.entity.Cart;
 import rider.nbc.domain.order.enums.OrderStatus;
+import rider.nbc.domain.order.vo.OrderMenu;
 import rider.nbc.domain.store.entity.Store;
 import rider.nbc.domain.user.entity.User;
 import rider.nbc.global.config.TimeBaseEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author    : kimjungmin
@@ -39,6 +42,11 @@ public class Order extends TimeBaseEntity {
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;
+
+	@ElementCollection
+	@CollectionTable(name = "order_menus",joinColumns = @JoinColumn(name = "order_id"))
+	@Builder.Default
+	private List<OrderMenu> orderMenus = new ArrayList<>();
 
 	public void updateStatus(OrderStatus orderStatus) {
 		this.orderStatus = orderStatus;

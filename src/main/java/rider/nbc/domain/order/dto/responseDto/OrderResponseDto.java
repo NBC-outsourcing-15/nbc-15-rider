@@ -3,7 +3,7 @@ package rider.nbc.domain.order.dto.responseDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import rider.nbc.domain.cart.vo.MenuItem;
+import rider.nbc.domain.order.vo.OrderMenu;
 import rider.nbc.domain.order.enums.OrderStatus;
 
 import java.time.LocalDateTime;
@@ -24,7 +24,7 @@ public class OrderResponseDto {
 
     private final OrderStatus status;
 
-    private final List<MenuItem> orderMenus;
+    private final List<OrderMenu> orderMenus;
 
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;

@@ -6,7 +6,7 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 public class MenuItem {
 	private Long menuId;
 	private Long price;
