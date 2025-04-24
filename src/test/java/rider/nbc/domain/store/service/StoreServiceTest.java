@@ -16,9 +16,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import rider.nbc.domain.store.dto.StoreCreateRequestDto;
+import rider.nbc.domain.store.dto.StoreUpdateRequestDto;
 import rider.nbc.domain.store.entity.Store;
+import rider.nbc.domain.store.entity.StoreStatus;
 import rider.nbc.domain.store.exception.StoreException;
 import rider.nbc.domain.store.exception.StoreExceptionCode;
+import rider.nbc.domain.store.fixture.StoreFixture;
 import rider.nbc.domain.store.repository.StoreRepository;
 import rider.nbc.domain.user.entity.Role;
 import rider.nbc.domain.user.entity.User;
@@ -132,6 +135,119 @@ class StoreServiceTest {
 				assertThatThrownBy(() -> storeService.createStore(ownerId, requestDto))
 					.isInstanceOf(StoreException.class)
 					.hasMessage(StoreExceptionCode.TOO_MANY_STORE.getMessage());
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName("updateStore 메서드는")
+	class Describe_updateStore {
+
+		// 테스트에 사용할 공통 값
+		Long storeId = 1L;
+		Long userId = 1L;
+		StoreUpdateRequestDto requestDto = StoreUpdateRequestDto.builder()
+			.name("Updated Store")
+			.category("Updated Category")
+			.city("Updated City")
+			.district("Updated District")
+			.detailedAddress("Updated Detailed Address")
+			.storePictureUrl("http://example.com/updated-image.jpg")
+			.introduce("Updated introduce")
+			.openTime(LocalTime.of(10, 0))
+			.closeTime(LocalTime.of(22, 0))
+			.storeStatus(StoreStatus.OPEN)
+			.build();
+
+		@Nested
+		@DisplayName("유효한 사용자와 가게 ID가 주어지면")
+		class Context_with_valid_user_and_store_id {
+
+			@Test
+			@DisplayName("가게 정보를 업데이트하고 반환한다")
+			void it_updates_and_returns_store() {
+				// Given
+				User ceoUser = defaultUser(Role.CEO);
+				Store store = StoreFixture.storeFrom(storeId, ceoUser);
+
+				when(storeRepository.findByIdOrElseThrow(storeId)).thenReturn(store);
+				when(userRepository.findByOwnerIdOrThrow(userId)).thenReturn(ceoUser);
+
+				// When
+				Store result = storeService.updateStore(storeId, userId, requestDto);
+
+				// Then
+				assertThat(result.getName()).isEqualTo(requestDto.getName());
+				assertThat(result.getCategory()).isEqualTo(requestDto.getCategory());
+				assertThat(result.getAddress().getCity()).isEqualTo(requestDto.getCity());
+				assertThat(result.getAddress().getDistrict()).isEqualTo(requestDto.getDistrict());
+				assertThat(result.getAddress().getDetailedAddress()).isEqualTo(requestDto.getDetailedAddress());
+				assertThat(result.getStorePictureUrl()).isEqualTo(requestDto.getStorePictureUrl());
+				assertThat(result.getIntroduce()).isEqualTo(requestDto.getIntroduce());
+				assertThat(result.getOperatingHours().getOpenTime()).isEqualTo(requestDto.getOpenTime());
+				assertThat(result.getOperatingHours().getCloseTime()).isEqualTo(requestDto.getCloseTime());
+				assertThat(result.getStoreStatus()).isEqualTo(requestDto.getStoreStatus());
+			}
+		}
+
+		@Nested
+		@DisplayName("존재하지 않는 가게 ID가 주어지면")
+		class Context_with_non_existent_store_id {
+
+			@Test
+			@DisplayName("NOT_FOUND_STORE 예외를 던진다")
+			void it_throws_not_found_store_exception() {
+				// Given
+				when(storeRepository.findByIdOrElseThrow(storeId))
+					.thenThrow(new StoreException(StoreExceptionCode.NOT_FOUND_STORE));
+
+				// When & Then
+				assertThatThrownBy(() -> storeService.updateStore(storeId, userId, requestDto))
+					.isInstanceOf(StoreException.class)
+					.hasMessage(StoreExceptionCode.NOT_FOUND_STORE.getMessage());
+			}
+		}
+
+		@Nested
+		@DisplayName("CEO가 아닌 사용자가 요청하면")
+		class Context_with_non_ceo_user {
+
+			@Test
+			@DisplayName("NOT_CEO 예외를 던진다")
+			void it_throws_not_ceo_exception() {
+				// Given
+				User nonCeoUser = defaultUser(Role.USER);
+				Store store = mock(Store.class);
+
+				when(storeRepository.findByIdOrElseThrow(storeId)).thenReturn(store);
+				when(userRepository.findByOwnerIdOrThrow(userId)).thenReturn(nonCeoUser);
+
+				// When & Then
+				assertThatThrownBy(() -> storeService.updateStore(storeId, userId, requestDto))
+					.isInstanceOf(StoreException.class)
+					.hasMessage(StoreExceptionCode.NOT_CEO.getMessage());
+			}
+		}
+
+		@Nested
+		@DisplayName("가게 소유자가 아닌 사용자가 요청하면")
+		class Context_with_non_owner_user {
+
+			@Test
+			@DisplayName("NOT_STORE_OWNER 예외를 던진다")
+			void it_throws_not_store_owner_exception() {
+				// Given
+				User ceoUser = defaultUser(Role.CEO);
+				Store store = mock(Store.class);
+
+				when(storeRepository.findByIdOrElseThrow(storeId)).thenReturn(store);
+				when(userRepository.findByOwnerIdOrThrow(userId)).thenReturn(ceoUser);
+				when(store.isOwner(ceoUser)).thenReturn(false);
+
+				// When & Then
+				assertThatThrownBy(() -> storeService.updateStore(storeId, userId, requestDto))
+					.isInstanceOf(StoreException.class)
+					.hasMessage(StoreExceptionCode.NOT_STORE_OWNER.getMessage());
 			}
 		}
 	}
