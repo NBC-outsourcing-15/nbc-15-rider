@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import rider.nbc.domain.store.dto.StoreCreateRequestDto;
+import rider.nbc.domain.store.dto.StoreUpdateRequestDto;
 import rider.nbc.domain.store.entity.Store;
 import rider.nbc.domain.store.exception.StoreException;
 import rider.nbc.domain.store.exception.StoreExceptionCode;
@@ -51,5 +52,38 @@ public class StoreService {
 		}
 
 		return storeRepository.save(requestDto.toEntity(user));
+	}
+
+	/**
+	 * 가게 정보 업데이트
+	 * 가게 소유자만 업데이트 가능
+	 *
+	 * @param storeId 업데이트할 가게 ID
+	 * @param userId 요청한 사용자 ID
+	 * @param requestDto 업데이트 요청 DTO
+	 * @return 업데이트된 가게 정보
+	 */
+	@Transactional
+	public Store updateStore(Long storeId, Long userId, StoreUpdateRequestDto requestDto) {
+		// 가게 정보 조회
+		Store store = storeRepository.findByIdOrElseThrow(storeId);
+
+		// 사용자 정보 조회
+		User user = userRepository.findByOwnerIdOrThrow(userId);
+
+		// CEO 권한 확인
+		if (!user.isCEO()) {
+			throw new StoreException(StoreExceptionCode.NOT_CEO);
+		}
+
+		// 가게 소유자 확인
+		if (!store.isOwner(user)) {
+			throw new StoreException(StoreExceptionCode.NOT_STORE_OWNER);
+		}
+
+		// 가게 정보 업데이트
+		store.update(requestDto);
+
+		return store;
 	}
 }
