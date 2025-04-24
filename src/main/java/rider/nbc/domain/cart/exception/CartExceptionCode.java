@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum CartExceptionCode {
-    NO_CONTENTS(true, HttpStatus.NO_CONTENT, "장바구니가 비어있습니다."),
+    CART_IS_EMPTY(false, HttpStatus.NOT_FOUND, "장바구니가 비어있습니다."),
 
     CART_READ_FAILED(false, HttpStatus.BAD_REQUEST,"장바구니 읽어오기 실패"),
     CART_SAVE_FAILED(false,HttpStatus.INTERNAL_SERVER_ERROR, "장바구니 저장 실패"),

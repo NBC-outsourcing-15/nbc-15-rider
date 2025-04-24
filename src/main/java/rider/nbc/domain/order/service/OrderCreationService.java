@@ -37,8 +37,11 @@ public class OrderCreationService {
     public OrderResponseDto create(User authUser){
         //유저의 장바구니 조회
         Cart cart = cartRedisRepository.findById(authUser.getId())
-                .orElseThrow(() -> new CartException(CartExceptionCode.NO_CONTENTS));
+                .orElseThrow(() -> new CartException(CartExceptionCode.CART_IS_EMPTY));
         //장바구니 비어있으면 xx
+        if(cart.getMenus().isEmpty()){
+            throw new CartException(CartExceptionCode.CART_IS_EMPTY);
+        }
 
         // Order 만들기
         Store store = storeRepository.findByIdOrElseThrow(cart.getStoreId());
