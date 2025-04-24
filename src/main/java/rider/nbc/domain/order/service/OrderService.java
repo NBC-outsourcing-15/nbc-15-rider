@@ -105,7 +105,7 @@ public class OrderService {
 
     @Transactional
     public String patchOrderStatus(AuthUser authUser, Long orderId, OrderStatusRequestDto statusRequestDto) {
-        if( ! authUser.getRole().equals(Role.CEO)){
+        if( ! authUser.getRole().equals(Role.ROLE_CEO)){
             throw new OrderException(OrderExceptionCode.NOT_OWNER);
         }
         //orderId의 가게를 받아옴

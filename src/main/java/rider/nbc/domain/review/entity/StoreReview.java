@@ -1,17 +1,6 @@
 package rider.nbc.domain.review.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,31 +11,70 @@ import rider.nbc.domain.store.entity.Store;
 import rider.nbc.domain.user.entity.User;
 import rider.nbc.global.config.TimeBaseEntity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name = "store_reviews")
 public class StoreReview extends TimeBaseEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	@Column(nullable = false)
-	private String content;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@ElementCollection
-	@Builder.Default
-	private List<MenuReview> menuReviews = new ArrayList<>();
+    @Column(nullable = false)
+    private String content;
 
-	@OneToOne
-	@JoinColumn(name = "order_id")
-	private Order order;
+    @Column(nullable = false)
+    private int rating;
 
-	@ManyToOne
-	@JoinColumn(name = "user_id")
-	private User user;
+    private boolean isDeleted;
 
-	@ManyToOne
-	@JoinColumn(name = "store_id")
-	private Store store;
+    @ElementCollection
+    @CollectionTable(name = "menu_reviews", joinColumns = @JoinColumn(name = "store_review_id"))
+    @Builder.Default
+    private Set<MenuReview> menuReviews = new HashSet<>();
+
+    @OneToOne(targetEntity = Order.class, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "order_id")
+    private Order order;
+
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne(targetEntity = Store.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id")
+    private Store store;
+
+    public Long getUserId() {
+        return user.getId();
+    }
+
+    public Long getReviewerId() {
+        return user.getId();
+    }
+
+    public Long getOrderId() {
+        return order.getId();
+    }
+
+    public Long getStoreId() {
+        return store.getId();
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void updateRating(int rating) {
+        this.rating = rating;
+    }
+
+    public void delete() {
+        this.isDeleted = true;
+    }
 }
