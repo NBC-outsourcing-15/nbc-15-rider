@@ -23,6 +23,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rider.nbc.domain.menu.entity.Menu;
+import rider.nbc.domain.review.entity.StoreReview;
 import rider.nbc.domain.store.dto.StoreUpdateRequestDto;
 import rider.nbc.domain.user.entity.User;
 import rider.nbc.global.config.TimeBaseEntity;
@@ -72,6 +73,9 @@ public class Store extends TimeBaseEntity {
 
 	@OneToMany(mappedBy = "store", fetch = FetchType.LAZY)
 	private List<Menu> menus;
+
+	@OneToMany(mappedBy = "store", fetch = FetchType.LAZY)
+	private List<StoreReview> storeReviews;
 
 	public void update(StoreUpdateRequestDto request) {
 		this.name = request.getName();
