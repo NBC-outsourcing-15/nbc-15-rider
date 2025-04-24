@@ -2,6 +2,9 @@ package rider.nbc.domain.store.entity;
 
 import java.util.List;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -20,6 +23,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rider.nbc.domain.menu.entity.Menu;
+import rider.nbc.domain.review.entity.StoreReview;
+import rider.nbc.domain.store.dto.StoreUpdateRequestDto;
 import rider.nbc.domain.user.entity.User;
 import rider.nbc.global.config.TimeBaseEntity;
 
@@ -28,6 +33,8 @@ import rider.nbc.global.config.TimeBaseEntity;
 @AllArgsConstructor
 @Builder
 @Entity
+@SQLDelete(sql = "UPDATE stores SET store_status = 'CLOSED_PERMANENTLY' WHERE store_id = ?")
+@SQLRestriction("store_status != 'CLOSED_PERMANENTLY'")
 @Table(name = "stores")
 public class Store extends TimeBaseEntity {
 	@Id
@@ -56,7 +63,7 @@ public class Store extends TimeBaseEntity {
 	@Embedded
 	private OperatingHours operatingHours;
 
-	@Column
+	@Column(nullable = false)
 	@Enumerated(value = EnumType.STRING)
 	private StoreStatus storeStatus;
 
@@ -66,6 +73,20 @@ public class Store extends TimeBaseEntity {
 
 	@OneToMany(mappedBy = "store", fetch = FetchType.LAZY)
 	private List<Menu> menus;
+
+	@OneToMany(mappedBy = "store", fetch = FetchType.LAZY)
+	private List<StoreReview> storeReviews;
+
+	public void update(StoreUpdateRequestDto request) {
+		this.name = request.getName();
+		this.category = request.getCategory();
+		this.address = new StoreAddress(request.getCity(), request.getDistrict(), request.getDetailedAddress());
+		this.storePictureUrl = request.getStorePictureUrl();
+		this.introduce = request.getIntroduce();
+		this.operatingHours = new OperatingHours(request.getOpenTime(), request.getCloseTime());
+		this.minDeliveryPrice = request.getMinDeliveryPrice();
+		this.storeStatus = request.getStoreStatus();
+	}
 
 	public boolean isOwner(User user) {
 		return owner.getId().equals(user.getId());

@@ -39,9 +39,9 @@ public class MenuService {
 	 * @return 생성된 메뉴 정보
 	 */
 	@Transactional
-	public Menu createMenu(String userId, Long storeId, MenuCreateRequestDto requestDto) {
+	public Menu createMenu(Long userId, Long storeId, MenuCreateRequestDto requestDto) {
 		// 사용자 정보 조회
-		User user = userRepository.findByOwnerIdOrThrow(Long.parseLong(userId));
+		User user = userRepository.findByOwnerIdOrThrow(userId);
 
 		// 가게 정보 조회
 		Store store = storeRepository.findByIdOrElseThrow(storeId);
@@ -66,9 +66,9 @@ public class MenuService {
 	 * @return 수정된 메뉴 정보
 	 */
 	@Transactional
-	public Menu updateMenu(String userId, Long storeId, Long menuId, MenuUpdateRequestDto requestDto) {
+	public Menu updateMenu(Long userId, Long storeId, Long menuId, MenuUpdateRequestDto requestDto) {
 		// 사용자 정보 조회
-		User user = userRepository.findByOwnerIdOrThrow(Long.parseLong(userId));
+		User user = userRepository.findByOwnerIdOrThrow(userId);
 
 		// 가게 정보 조회
 		Store store = storeRepository.findStoreWithMenusByIdOrElseThrow(storeId);
@@ -100,9 +100,9 @@ public class MenuService {
 	 * @param menuId 삭제할 메뉴 ID
 	 */
 	@Transactional
-	public void deleteMenu(String userId, Long storeId, Long menuId) {
+	public void deleteMenu(Long userId, Long storeId, Long menuId) {
 		// 사용자 정보 조회
-		User user = userRepository.findByOwnerIdOrThrow(Long.parseLong(userId));
+		User user = userRepository.findByOwnerIdOrThrow(userId);
 
 		// 가게 정보 조회
 		Store store = storeRepository.findStoreWithMenusByIdOrElseThrow(storeId);
