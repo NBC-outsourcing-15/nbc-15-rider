@@ -5,10 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import rider.nbc.domain.user.dto.LoginRequestDto;
-import rider.nbc.domain.user.dto.ReissueRequestDto;
-import rider.nbc.domain.user.dto.SignupRequestDto;
-import rider.nbc.domain.user.dto.UserResponseDto;
+import rider.nbc.domain.user.dto.*;
 import rider.nbc.domain.user.entity.Role;
 import rider.nbc.domain.user.entity.User;
 import rider.nbc.domain.user.entity.UserStatus;
@@ -111,6 +108,20 @@ public class UserService {
                 .phone(user.getPhone())
                 .role(user.getRole())
                 .socialType(user.getSocialType())
+                .build();
+    }
+
+    @Transactional
+    public UpdateUserResponseDto updateUser(Long userId, UpdateUserRequestDto dto) {
+        User user = userRepository.findByIdOrElseThrow(userId);
+        user.checkEmailDuplicate(userRepository, dto.getEmail());
+
+        user.updateUserInfo(dto.getEmail(), dto.getNickname(), dto.getPhone());
+
+        return UpdateUserResponseDto.builder()
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .phone(user.getPhone())
                 .build();
     }
 }
