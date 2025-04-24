@@ -3,6 +3,7 @@ package rider.nbc.domain.store.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -100,6 +101,29 @@ public class StoreController {
 				.status(HttpStatus.OK.value())
 				.message("가게 조회가 성공적으로 완료되었습니다.")
 				.result(responseDto)
+				.build());
+	}
+
+	/**
+	 * 가게 삭제 (폐업 처리)
+	 * 가게 소유자만 삭제 가능
+	 *
+	 * @param storeId 삭제할 가게 ID
+	 * @param authUser 인증된 사용자 정보
+	 * @return 삭제 성공 응답
+	 */
+	@DeleteMapping("/api/v1/stores/{storeId}")
+	public ResponseEntity<CommonResponse<Void>> deleteStore(
+		@PathVariable Long storeId,
+		@AuthenticationPrincipal AuthUser authUser) {
+
+		storeService.deleteStore(storeId, authUser.getId());
+
+		return ResponseEntity.ok()
+			.body(CommonResponse.<Void>builder()
+				.success(true)
+				.status(HttpStatus.OK.value())
+				.message("가게가 성공적으로 폐업 처리되었습니다.")
 				.build());
 	}
 }

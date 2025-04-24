@@ -98,4 +98,32 @@ public class StoreService {
 	public Store getStoreWithMenus(Long storeId) {
 		return storeRepository.findStoreWithMenusByIdOrElseThrow(storeId);
 	}
+
+	/**
+	 * 가게 삭제 (폐업 처리)
+	 * 가게 소유자만 삭제 가능
+	 *
+	 * @param storeId 삭제할 가게 ID
+	 * @param userId 요청한 사용자 ID
+	 */
+	@Transactional
+	public void deleteStore(Long storeId, Long userId) {
+		// 가게 정보 조회
+		Store store = storeRepository.findByIdOrElseThrow(storeId);
+
+		// 사용자 정보 조회
+		User user = userRepository.findByOwnerIdOrThrow(userId);
+
+		// CEO 권한 확인
+		if (!user.isCEO()) {
+			throw new StoreException(StoreExceptionCode.NOT_CEO);
+		}
+
+		// 가게 소유자 확인
+		if (!store.isOwner(user)) {
+			throw new StoreException(StoreExceptionCode.NOT_STORE_OWNER);
+		}
+
+		storeRepository.delete(store);
+	}
 }
