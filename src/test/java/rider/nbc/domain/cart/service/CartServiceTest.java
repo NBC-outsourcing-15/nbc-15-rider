@@ -27,8 +27,11 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -267,19 +270,12 @@ class CartServiceTest {
     class deleteCart_Test{
         Long userId = 1L;
 
-        Long store1Id = 101L;
-        Menu menu1 = new Menu();
-        Menu menu2 = new Menu();
-
-        List<MenuItem> menuItems = new ArrayList<>(List.of(
-                new MenuItem(1L, null, null, 2),
-                new MenuItem(2L, null, null, 1)
-        ));
-
         @Test
         @DisplayName("deleteCart 성공 - 장바구니 초기화")
         void deleteCart_success(){
+            cartService.deleteCart(userId);
 
+            verify(cartRedisRepository,times(1)).deleteById(anyLong());
         }
     }
 }

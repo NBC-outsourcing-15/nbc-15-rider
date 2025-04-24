@@ -1,6 +1,7 @@
 package rider.nbc.domain.cart.vo;
 
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.springframework.data.redis.core.TimeToLive;
 @RedisHash("cart")
 public class Cart implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -41,10 +43,12 @@ public class Cart implements Serializable {
 	public void updateCart(Long storeId, List<MenuItem> menuItems){
 		this.storeId =storeId;
 		this.menus = menuItems;
+		ttl = 86400L;
 	}
 
 	public void removeMenuItem(Long menuId) {
 		this.menus.removeIf(menuItem -> menuItem.getMenuId().equals(menuId));
+		ttl = 86400L;
 	}
 
 }
