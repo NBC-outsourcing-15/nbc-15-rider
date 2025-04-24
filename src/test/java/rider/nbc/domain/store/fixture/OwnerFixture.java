@@ -13,7 +13,7 @@ public class OwnerFixture {
 		return User.builder()
 			.id(1L)
 			.email("test@example.com")
-			.role(role)
+			.role(Role.ROLE_USER)
 			.build();
 	}
 
@@ -23,7 +23,7 @@ public class OwnerFixture {
 		return User.builder()
 			.id(id)
 			.email(email)
-			.role(Role.CEO)
+			.role(Role.ROLE_CEO)
 			.build();
 	}
 }

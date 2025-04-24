@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum UserExceptionCode {
+    //회원 가입 관련
+    INVALID_ROLE(false,HttpStatus.BAD_REQUEST,"잘못된 회원가입입니다." ),
 
     // 회원 조회 관련
     USER_NOT_FOUND(false, HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),

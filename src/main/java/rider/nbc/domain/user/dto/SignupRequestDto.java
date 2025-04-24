@@ -17,7 +17,7 @@ public class SignupRequestDto {
 
     @NotBlank(message = "비밀번호를 적어주세요")
     @Pattern(
-            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z\\d]).{8,}$",
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_\\-+={\\[\\]}:;\"'<,>.?/])[\\S]{8,}$",
             message = "비밀번호에는 대소문자 포함 영문 + 숫자 + 특수문자를 최소 1글자씩 포함되어야 합니다."
     )
     private String password;

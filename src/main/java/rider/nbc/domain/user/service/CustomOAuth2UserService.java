@@ -35,42 +35,47 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         User user;
 
-        if ("kakao".equals(registrationId)) { // 카카오 로그인 실행 URI : http://localhost:8080/oauth2/authorization/kakao
-            KakaoUserInfoResponse kakaoUser = objectMapper.convertValue(attributes, KakaoUserInfoResponse.class);
-            String email = kakaoUser.getEmail();
-            String nickname = kakaoUser.getNickname();
+        switch (registrationId) {
+            case "kakao":
+                // 카카오 로그인 처리
+                KakaoUserInfoResponse kakaoUser = objectMapper.convertValue(attributes, KakaoUserInfoResponse.class);
+                String kakaoEmail = kakaoUser.getEmail();
+                String kakaoNickname = kakaoUser.getNickname();
 
-            userRepository.validateSocialJoinEmail(email, SocialType.KAKAO);
+                userRepository.validateSocialJoinEmail(kakaoEmail, SocialType.KAKAO);
 
-            user = userRepository.findByEmail(email).orElseGet(() ->
-                    userRepository.save(User.builder()
-                            .email(email)
-                            .nickname(nickname)
-                            .role(Role.USER)
-                            .status(UserStatus.ACTIVE)
-                            .socialType(SocialType.KAKAO)
-                            .build()));
+                user = userRepository.findByEmail(kakaoEmail).orElseGet(() ->
+                        userRepository.save(User.builder()
+                                .email(kakaoEmail)
+                                .nickname(kakaoNickname)
+                                .role(Role.ROLE_USER)
+                                .status(UserStatus.ACTIVE)
+                                .socialType(SocialType.KAKAO)
+                                .build()));
+                break;
 
-        } else if ("naver".equals(registrationId)) {  // 네이버 로그인 실행 URI : http://localhost:8080/oauth2/authorization/naver
-            NaverUserInfoResponse naverUser = objectMapper.convertValue(attributes, NaverUserInfoResponse.class);
-            String email = naverUser.getEmail();
-            String nickname = naverUser.getNickname();
-            String socialId = naverUser.getSocialId();
+            case "naver":
+                // 네이버 로그인 처리
+                NaverUserInfoResponse naverUser = objectMapper.convertValue(attributes, NaverUserInfoResponse.class);
+                String naverEmail = naverUser.getEmail();
+                String naverNickname = naverUser.getNickname();
+                String naverSocialId = naverUser.getSocialId();
 
-            userRepository.validateSocialJoinEmail(email, SocialType.NAVER);
+                userRepository.validateSocialJoinEmail(naverEmail, SocialType.NAVER);
 
-            user = userRepository.findBySocialIdAndSocialType(socialId, SocialType.NAVER)
-                    .orElseGet(() -> userRepository.save(User.builder()
-                            .email(email)
-                            .nickname(nickname)
-                            .socialId(socialId)
-                            .socialType(SocialType.NAVER)
-                            .role(Role.USER)
-                            .status(UserStatus.ACTIVE)
-                            .build()));
+                user = userRepository.findBySocialIdAndSocialType(naverSocialId, SocialType.NAVER)
+                        .orElseGet(() -> userRepository.save(User.builder()
+                                .email(naverEmail)
+                                .nickname(naverNickname)
+                                .socialId(naverSocialId)
+                                .socialType(SocialType.NAVER)
+                                .role(Role.ROLE_USER)
+                                .status(UserStatus.ACTIVE)
+                                .build()));
+                break;
 
-        } else {
-            throw new UserException(UserExceptionCode.UNSUPPORTED_SOCIAL_PROVIDER);
+            default:
+                throw new UserException(UserExceptionCode.UNSUPPORTED_SOCIAL_PROVIDER);
         }
 
         return new AuthUser(user.getId(), user.getEmail(), user.getNickname(), user.getRole());
