@@ -13,7 +13,7 @@ public class OwnerFixture {
 		return User.builder()
 			.id(1L)
 			.email("test@example.com")
-			.role(Role.USER)
+			.role(role)
 			.build();
 	}
 
