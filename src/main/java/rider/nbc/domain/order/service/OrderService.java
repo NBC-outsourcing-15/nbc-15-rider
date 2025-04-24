@@ -2,6 +2,7 @@ package rider.nbc.domain.order.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import rider.nbc.domain.order.dto.requestDto.OrderStatusRequestDto;
 import rider.nbc.domain.order.dto.responseDto.OrderResponseDto;
 import rider.nbc.domain.order.entity.Order;
@@ -32,6 +33,7 @@ public class OrderService {
         return orderCreationService.create(user);
     }
 
+    @Transactional
     public String patchOrderStatus(AuthUser authUser, Long orderId, OrderStatusRequestDto statusRequestDto) {
         if( ! authUser.getRole().equals(Role.CEO)){
             throw new OrderException(OrderExceptionCode.NOT_OWNER);

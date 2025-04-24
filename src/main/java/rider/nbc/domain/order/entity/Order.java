@@ -30,7 +30,7 @@ public class Order extends TimeBaseEntity {
 	private Long totalPrice;
 
 	@Enumerated(EnumType.STRING)
-	private OrderStatus orderStatus = OrderStatus.WAITING;
+	private OrderStatus orderStatus;
 
 	@ManyToOne
 	@JoinColumn(name = "store_id")

@@ -27,7 +27,7 @@ public enum OrderStatus {
 	 	return Arrays.stream(OrderStatus.values())
 	 		.filter(s -> s.name().equalsIgnoreCase(status))
 	 		.findFirst()
-			.orElseThrow(() -> new OrderException(OrderExceptionCode.INVALID_ORDER_ID));
+			.orElseThrow(() -> new OrderException(OrderExceptionCode.INVALID_STATUS));
 	 }
 
 	public boolean canTransitionTo(OrderStatus nextStatus) {
