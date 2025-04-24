@@ -1,7 +1,6 @@
 package rider.nbc.domain.user.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +16,7 @@ import rider.nbc.domain.user.exception.UserExceptionCode;
 import rider.nbc.domain.user.repository.UserRepository;
 import rider.nbc.global.jwt.JwtTokenProvider;
 import rider.nbc.global.jwt.dto.TokenResponseDto;
+import rider.nbc.global.jwt.service.RefreshTokenService;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +24,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final StringRedisTemplate redisTemplate;
+    private final RefreshTokenService refreshTokenService;
 
     public void signup(SignupRequestDto dto) {
         String encodedPassword = passwordEncoder.encode(dto.getPassword());
@@ -50,14 +50,10 @@ public class UserService {
         user.validateIsActive(); // soft delete 확인
         user.validatePassword(dto.getPassword(), passwordEncoder);
 
-        TokenResponseDto token = jwtTokenProvider.generateTokenPair(user.getId(), user.getEmail(), user.getRole());
+        TokenResponseDto token = jwtTokenProvider.generateTokenPair(user.getId(), user.getEmail(),user.getNickname(), user.getRole());
 
         // Redis에 RefreshToken 저장
-        redisTemplate.opsForValue().set(
-                "refresh_token:" + user.getId(),
-                token.getRefreshToken(),
-                jwtTokenProvider.getRefreshTokenDuration()
-        );
+        refreshTokenService.save(user.getId(), token.getRefreshToken(), jwtTokenProvider.getRefreshTokenDuration());
 
         return token;
     }
@@ -67,38 +63,32 @@ public class UserService {
 
         Long userId = jwtTokenProvider.getAuthorId(refreshToken);
         String email = jwtTokenProvider.getEmail(refreshToken);
+        String nickname = jwtTokenProvider.getNickname(refreshToken);
         Role role = jwtTokenProvider.getRole(refreshToken);
 
         // 2. Redis 에 저장된 토큰 조회
-        String redisKey = "refresh_token:" + userId;
-        String savedToken = redisTemplate.opsForValue().get(redisKey);
-
-        // 3. 비교
+        String savedToken = refreshTokenService.get(userId);
         if (savedToken == null || !savedToken.equals(refreshToken)) {
             throw new UserException(UserExceptionCode.TOKEN_NOT_MATCHED);
         }
 
         // 4. 새 토큰 발급
-        TokenResponseDto newToken = jwtTokenProvider.generateTokenPair(userId, email, role);
+        TokenResponseDto newToken = jwtTokenProvider.generateTokenPair(userId, email, nickname, role);
 
         // 5. Redis 갱신
-        redisTemplate.opsForValue().set(redisKey, newToken.getRefreshToken(), jwtTokenProvider.getRefreshTokenDuration()
-        );
+        refreshTokenService.save(userId, newToken.getRefreshToken(), jwtTokenProvider.getRefreshTokenDuration());
 
         return newToken;
     }
 
     public void logout(Long userId) {
-        String redisKey = "refresh_token:" + userId;
-
-        Boolean deleted = redisTemplate.delete(redisKey);
-
-        if (Boolean.FALSE.equals(deleted)) {
+        if (!refreshTokenService.exists(userId)) {
             throw new UserException(UserExceptionCode.TOKEN_NOT_MATCHED);
         }
-
+        refreshTokenService.delete(userId);
         SecurityContextHolder.clearContext();
     }
+
 
     @Transactional
     public void withdraw(Long userId, String rawPassword) {
@@ -106,7 +96,6 @@ public class UserService {
 
         user.validateIsActive();
         user.validatePassword(rawPassword, passwordEncoder);
-
         user.softDelete();
 
         logout(userId);

@@ -51,9 +51,13 @@ public class User extends TimeBaseEntity {
     @Column
     private Long point;
 
+    @Column(unique = true)
+    private String socialId;
+
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     private SocialType socialType = SocialType.NORMAL;
+
 
     public void validatePassword(String rawPassword, PasswordEncoder encoder) {
         if (!encoder.matches(rawPassword, this.password)) {

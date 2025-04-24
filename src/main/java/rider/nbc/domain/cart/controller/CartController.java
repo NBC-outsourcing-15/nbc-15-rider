@@ -22,6 +22,7 @@ import rider.nbc.global.response.CommonResponse;
 @RequestMapping("/api/v1/cart")
 @RequiredArgsConstructor
 public class CartController {
+
     private final CartService cartService;
 
     /**
@@ -45,7 +46,7 @@ public class CartController {
 
     /**
      * [Controller] 장바구니 메뉴 조회
-     * 
+     *
      * @param authUser 로그인 유저 정보
      * @return 해당 유저의 장바구니 내용 확인
      */
@@ -92,7 +93,7 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(true,
                         HttpStatus.OK.value(),
-                        "장바구니 수정완료"));
+                        "장바구니 초기화"));
     }
 
 }

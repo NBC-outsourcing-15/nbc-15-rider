@@ -23,7 +23,7 @@ public enum UserExceptionCode {
     INVALID_PASSWORD(false, HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
     SOCIAL_LOGIN_ONLY(false, HttpStatus.BAD_REQUEST, "소셜 로그인 전용 계정입니다."),
     NOT_NORMAL_USER(false, HttpStatus.BAD_REQUEST, "일반 로그인 사용자가 아닙니다."),
-
+    UNSUPPORTED_SOCIAL_PROVIDER(false, HttpStatus.BAD_REQUEST, "지원하지 않는 소셜 로그인입니다."),
     // JWT/토큰 관련
     INVALID_TOKEN(false, HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
     EXPIRED_TOKEN(false, HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),

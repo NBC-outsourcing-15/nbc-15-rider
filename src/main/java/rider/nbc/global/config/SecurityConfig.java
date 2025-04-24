@@ -14,6 +14,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import rider.nbc.domain.user.service.CustomOAuth2UserService;
+import rider.nbc.global.handler.OAuth2LoginSuccessHandler;
+import rider.nbc.global.jwt.JwtAuthenticationEntryPoint;
 import rider.nbc.global.jwt.JwtAuthenticationFilter;
 import rider.nbc.global.jwt.JwtTokenProvider;
 
@@ -26,7 +29,7 @@ import rider.nbc.global.jwt.JwtTokenProvider;
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
-
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     /**
      * securityFilterChain 빈 정의
      *
@@ -37,7 +40,7 @@ public class SecurityConfig {
      *         설정 중 오류 발생 시 예외
      */
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, CustomOAuth2UserService customOAuth2UserService, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) throws Exception {
         return http
                 // 모든 요청에 대해 보안 정책을 적용함 (securityMatcher 선택적)
                 .securityMatcher((request -> true))
@@ -64,6 +67,7 @@ public class SecurityConfig {
                                 "/api/v1/users/signin",
                                 "/api/v1/users/reissue",
                                 "/oauth2/**",        // 소셜 로그인 경로도 포함
+                                "/login/oauth2/**",
                                 "/v3/api-docs/**",  // 스웨거 관련 경로
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
@@ -71,6 +75,14 @@ public class SecurityConfig {
                                 "/webjars/**"
                         ).permitAll()
                         .anyRequest().authenticated()
+                ).exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        .successHandler(oAuth2LoginSuccessHandler)
                 )
 
                 // JWT 인증 필터 등록
