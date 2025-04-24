@@ -2,18 +2,11 @@ package rider.nbc.domain.user.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import rider.nbc.domain.user.dto.LoginRequestDto;
-import rider.nbc.domain.user.dto.ReissueRequestDto;
-import rider.nbc.domain.user.dto.SignupRequestDto;
-import rider.nbc.domain.user.dto.WithdrawRequestDto;
+import rider.nbc.domain.user.dto.*;
 import rider.nbc.domain.user.service.UserService;
 import rider.nbc.global.auth.AuthUser;
 import rider.nbc.global.jwt.JwtTokenProvider;
@@ -56,5 +49,11 @@ public class UserController {
 		@Valid @RequestBody WithdrawRequestDto dto) {
 		userService.withdraw(authUser.getId(), dto.getPassword());
 		return ResponseEntity.ok().build();
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<UserResponseDto> getUser(@PathVariable Long id) {
+		UserResponseDto user = userService.getUser(id);
+		return ResponseEntity.ok(user);
 	}
 }
