@@ -2,7 +2,7 @@ package rider.nbc.domain.menu.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +17,7 @@ import rider.nbc.domain.menu.dto.MenuResponseDto;
 import rider.nbc.domain.menu.dto.MenuUpdateRequestDto;
 import rider.nbc.domain.menu.entity.Menu;
 import rider.nbc.domain.menu.service.MenuService;
+import rider.nbc.global.auth.AuthUser;
 import rider.nbc.global.response.CommonResponse;
 
 /**
@@ -35,16 +36,16 @@ public class MenuController {
 	 *
 	 * @param storeId 메뉴를 생성할 가게 ID
 	 * @param requestDto 메뉴 생성 요청 DTO
-	 * @param authentication 인증 정보
+	 * @param authUser 인증 정보
 	 * @return 생성된 메뉴 정보
 	 */
 	@PostMapping("/api/v1/stores/{storeId}/menus")
 	public ResponseEntity<CommonResponse<MenuResponseDto>> createMenu(
 		@PathVariable Long storeId,
 		@Valid @RequestBody MenuCreateRequestDto requestDto,
-		Authentication authentication) {
+		@AuthenticationPrincipal AuthUser authUser) {
 		// 현재 인증된 사용자 정보 가져오기
-		String userId = authentication.getName();
+		Long userId = authUser.getId();
 		Menu savedMenu = menuService.createMenu(userId, storeId, requestDto);
 		MenuResponseDto responseDto = MenuResponseDto.fromEntity(savedMenu);
 
@@ -63,7 +64,7 @@ public class MenuController {
 	 * @param storeId 메뉴가 속한 가게 ID
 	 * @param menuId 수정할 메뉴 ID
 	 * @param requestDto 메뉴 수정 요청 DTO
-	 * @param authentication 인증 정보
+	 * @param authUser 인증 정보
 	 * @return 수정된 메뉴 정보
 	 */
 	@PutMapping("/api/v1/stores/{storeId}/menus/{menuId}")
@@ -71,9 +72,8 @@ public class MenuController {
 		@PathVariable Long storeId,
 		@PathVariable Long menuId,
 		@Valid @RequestBody MenuUpdateRequestDto requestDto,
-		Authentication authentication) {
-		// 현재 인증된 사용자 정보 가져오기
-		String userId = authentication.getName();
+		@AuthenticationPrincipal AuthUser authUser) {
+		Long userId = authUser.getId();
 		Menu updatedMenu = menuService.updateMenu(userId, storeId, menuId, requestDto);
 		MenuResponseDto responseDto = MenuResponseDto.fromEntity(updatedMenu);
 
@@ -91,16 +91,16 @@ public class MenuController {
 	 *
 	 * @param storeId 메뉴가 속한 가게 ID
 	 * @param menuId 삭제할 메뉴 ID
-	 * @param authentication 인증 정보
+	 * @param authUser 인증 정보
 	 * @return 삭제 성공 응답
 	 */
 	@DeleteMapping("/api/v1/stores/{storeId}/menus/{menuId}")
 	public ResponseEntity<CommonResponse<Void>> deleteMenu(
 		@PathVariable Long storeId,
 		@PathVariable Long menuId,
-		Authentication authentication) {
+		@AuthenticationPrincipal AuthUser authUser) {
 		// 현재 인증된 사용자 정보 가져오기
-		String userId = authentication.getName();
+		Long userId = authUser.getId();
 		menuService.deleteMenu(userId, storeId, menuId);
 
 		return ResponseEntity.status(HttpStatus.OK)

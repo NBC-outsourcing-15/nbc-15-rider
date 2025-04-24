@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import rider.nbc.domain.store.dto.StoreCreateRequestDto;
+import rider.nbc.domain.store.dto.StoreUpdateRequestDto;
 import rider.nbc.domain.store.entity.Store;
 import rider.nbc.domain.store.exception.StoreException;
 import rider.nbc.domain.store.exception.StoreExceptionCode;
@@ -35,9 +36,9 @@ public class StoreService {
 	 * @return 생성된 가게 정보
 	 */
 	@Transactional
-	public Store createStore(String ownerId, StoreCreateRequestDto requestDto) {
+	public Store createStore(Long ownerId, StoreCreateRequestDto requestDto) {
 		// 사용자 정보 조회
-		User user = userRepository.findByOwnerIdOrThrow(Long.parseLong(ownerId));
+		User user = userRepository.findByOwnerIdOrThrow(ownerId);
 
 		// CEO 권한 확인
 		if (!user.isCEO()) {
@@ -51,5 +52,78 @@ public class StoreService {
 		}
 
 		return storeRepository.save(requestDto.toEntity(user));
+	}
+
+	/**
+	 * 가게 정보 업데이트
+	 * 가게 소유자만 업데이트 가능
+	 *
+	 * @param storeId 업데이트할 가게 ID
+	 * @param userId 요청한 사용자 ID
+	 * @param requestDto 업데이트 요청 DTO
+	 * @return 업데이트된 가게 정보
+	 */
+	@Transactional
+	public Store updateStore(Long storeId, Long userId, StoreUpdateRequestDto requestDto) {
+		// 가게 정보 조회
+		Store store = storeRepository.findByIdOrElseThrow(storeId);
+
+		// 사용자 정보 조회
+		User user = userRepository.findByOwnerIdOrThrow(userId);
+
+		// CEO 권한 확인
+		if (!user.isCEO()) {
+			throw new StoreException(StoreExceptionCode.NOT_CEO);
+		}
+
+		// 가게 소유자 확인
+		if (!store.isOwner(user)) {
+			throw new StoreException(StoreExceptionCode.NOT_STORE_OWNER);
+		}
+
+		// 가게 정보 업데이트
+		store.update(requestDto);
+
+		return store;
+	}
+
+	/**
+	 * 가게 단건 조회
+	 * 메뉴 정보를 포함한 가게 정보를 조회
+	 *
+	 * @param storeId 조회할 가게 ID
+	 * @return 조회된 가게 정보
+	 */
+	@Transactional(readOnly = true)
+	public Store getStoreWithMenus(Long storeId) {
+		return storeRepository.findStoreWithMenusByIdOrElseThrow(storeId);
+	}
+
+	/**
+	 * 가게 삭제 (폐업 처리)
+	 * 가게 소유자만 삭제 가능
+	 *
+	 * @param storeId 삭제할 가게 ID
+	 * @param userId 요청한 사용자 ID
+	 */
+	@Transactional
+	public void deleteStore(Long storeId, Long userId) {
+		// 가게 정보 조회
+		Store store = storeRepository.findByIdOrElseThrow(storeId);
+
+		// 사용자 정보 조회
+		User user = userRepository.findByOwnerIdOrThrow(userId);
+
+		// CEO 권한 확인
+		if (!user.isCEO()) {
+			throw new StoreException(StoreExceptionCode.NOT_CEO);
+		}
+
+		// 가게 소유자 확인
+		if (!store.isOwner(user)) {
+			throw new StoreException(StoreExceptionCode.NOT_STORE_OWNER);
+		}
+
+		storeRepository.delete(store);
 	}
 }

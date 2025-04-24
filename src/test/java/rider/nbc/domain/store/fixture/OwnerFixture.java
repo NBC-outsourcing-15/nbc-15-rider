@@ -9,7 +9,7 @@ import rider.nbc.domain.user.entity.User;
  */
 public class OwnerFixture {
 
-	public static User defaultUser(String role) {
+	public static User defaultUser(Role role) {
 		return User.builder()
 			.id(1L)
 			.email("test@example.com")
@@ -17,8 +17,8 @@ public class OwnerFixture {
 			.build();
 	}
 
-	public static User UserFrom(Long id, String role) {
-		String email = "CEO".equals(role) ? "ceo@ceo.com" : "non-ceo@ceo.com";
+	public static User UserFrom(Long id, Role role) {
+		String email = role == Role.CEO ? "ceo@ceo.com" : "non-ceo@ceo.com";
 
 		return User.builder()
 			.id(id)
