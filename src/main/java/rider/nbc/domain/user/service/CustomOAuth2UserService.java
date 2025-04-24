@@ -35,7 +35,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         User user;
 
-        if ("kakao".equals(registrationId)) {
+        if ("kakao".equals(registrationId)) { // 카카오 로그인 실행 URI : http://localhost:8080/oauth2/authorization/kakao
             KakaoUserInfoResponse kakaoUser = objectMapper.convertValue(attributes, KakaoUserInfoResponse.class);
             String email = kakaoUser.getEmail();
             String nickname = kakaoUser.getNickname();
@@ -51,7 +51,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                             .socialType(SocialType.KAKAO)
                             .build()));
 
-        } else if ("naver".equals(registrationId)) {
+        } else if ("naver".equals(registrationId)) {  // 네이버 로그인 실행 URI : http://localhost:8080/oauth2/authorization/naver
             NaverUserInfoResponse naverUser = objectMapper.convertValue(attributes, NaverUserInfoResponse.class);
             String email = naverUser.getEmail();
             String nickname = naverUser.getNickname();
