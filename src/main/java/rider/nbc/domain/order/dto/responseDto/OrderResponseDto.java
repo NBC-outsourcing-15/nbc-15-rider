@@ -1,6 +1,7 @@
 package rider.nbc.domain.order.dto.responseDto;
 
 import lombok.Builder;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import rider.nbc.domain.cart.vo.MenuItem;
 import rider.nbc.domain.order.enums.OrderStatus;
@@ -8,6 +9,7 @@ import rider.nbc.domain.order.enums.OrderStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Getter
 @Builder
 @RequiredArgsConstructor
 public class OrderResponseDto {

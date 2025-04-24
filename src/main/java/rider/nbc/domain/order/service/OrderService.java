@@ -7,6 +7,7 @@ import rider.nbc.domain.order.dto.responseDto.OrderResponseDto;
 import rider.nbc.domain.order.repository.OrderRepository;
 import rider.nbc.domain.user.entity.User;
 import rider.nbc.domain.user.repository.UserRepository;
+import rider.nbc.global.auth.AuthUser;
 
 /**
  * @author    : kimjungmin
@@ -25,5 +26,10 @@ public class OrderService {
         //유저의 장바구니 조회
         User user = userRepository.findActiveByIdOrThrow(authId);
         return orderCreationService.create(user);
+    }
+
+    public void patchOrderStatus(AuthUser authUser, Long orderId) {
+
+
     }
 }
