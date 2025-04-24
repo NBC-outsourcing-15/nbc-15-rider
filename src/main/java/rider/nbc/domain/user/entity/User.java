@@ -58,7 +58,6 @@ public class User extends TimeBaseEntity {
     @Column(nullable = false)
     private SocialType socialType = SocialType.NORMAL;
 
-
     public void validatePassword(String rawPassword, PasswordEncoder encoder) {
         if (!encoder.matches(rawPassword, this.password)) {
             throw new UserException(UserExceptionCode.INVALID_PASSWORD);
@@ -78,7 +77,7 @@ public class User extends TimeBaseEntity {
 
 	// Store CEO 확인용 로직
 	public boolean isCEO() {
-		return ROLE_CEO.equals(role);
+		return role.equals(Role.CEO);
 	}
 
     // 결제 성공으로 인한 포인트 추가
