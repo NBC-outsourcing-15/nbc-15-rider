@@ -37,12 +37,10 @@ public class CartController {
             @AuthenticationPrincipal AuthUser authUser
             ){
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(CommonResponse.<CartItemResponseDto>builder()
-                        .success(true)
-                        .status(HttpStatus.CREATED.value())
-                        .message("메뉴 추가 성공")
-                        .result(cartService.addCartItem(authUser.getId(),cartAddRequestDto))
-                        .build());
+                .body(CommonResponse.of(true,
+                        HttpStatus.CREATED.value(),
+                        "메뉴 추가 성공",
+                        cartService.addCartItem(authUser.getId(),cartAddRequestDto)));
     }
 
     /**
@@ -56,12 +54,10 @@ public class CartController {
             @AuthenticationPrincipal AuthUser authUser
     ){
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.<CartListResponseDto>builder()
-                        .success(true)
-                        .status(HttpStatus.OK.value())
-                        .message("장바구니 조회")
-                        .result(cartService.getCartList(authUser.getId()))
-                        .build());
+                .body(CommonResponse.of(true,
+                        HttpStatus.OK.value(),
+                        "장바구니 조회",
+                        cartService.getCartList(authUser.getId())));
     }
 
     @PutMapping
@@ -70,12 +66,10 @@ public class CartController {
             @Valid@RequestBody CartUpdateRequestDto requestDto
             ){
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.<CartListResponseDto>builder()
-                        .success(true)
-                        .status(HttpStatus.OK.value())
-                        .message("장바구니 수정완료")
-                        .result(cartService.updateCart(authUser.getId(), requestDto))
-                        .build());
+                .body(CommonResponse.of(true,
+                        HttpStatus.OK.value(),
+                        "장바구니 수정완료",
+                        cartService.updateCart(authUser.getId(), requestDto)));
     }
 
     @DeleteMapping("/items/{itemId}")
@@ -84,12 +78,10 @@ public class CartController {
             @PathVariable Long itemId
     ){
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.<CartListResponseDto>builder()
-                        .success(true)
-                        .status(HttpStatus.OK.value())
-                        .message("장바구니 수정완료")
-                        .result(cartService.deleteSelectedMenu(authUser.getId(), itemId))
-                        .build());
+                .body(CommonResponse.of(true,
+                        HttpStatus.OK.value(),
+                        "장바구니 수정완료",
+                        cartService.deleteSelectedMenu(authUser.getId(), itemId)));
     }
 
     @DeleteMapping
@@ -98,11 +90,9 @@ public class CartController {
     ){
         cartService.deleteCart(authUser.getId());
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.<Void>builder()
-                        .success(true)
-                        .status(HttpStatus.OK.value())
-                        .message("장바구니 초기화")
-                        .build());
+                .body(CommonResponse.of(true,
+                        HttpStatus.OK.value(),
+                        "장바구니 수정완료"));
     }
 
 }
