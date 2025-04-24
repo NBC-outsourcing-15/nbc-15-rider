@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rider.nbc.domain.order.entity.Order;
 import rider.nbc.domain.review.vo.MenuReview;
+import rider.nbc.domain.store.entity.Store;
 import rider.nbc.domain.user.entity.User;
 import rider.nbc.global.config.TimeBaseEntity;
 
@@ -44,4 +45,8 @@ public class StoreReview extends TimeBaseEntity {
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;
+
+	@ManyToOne
+	@JoinColumn(name = "store_id")
+	private Store store;
 }
