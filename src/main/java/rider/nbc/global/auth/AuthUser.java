@@ -13,8 +13,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import rider.nbc.domain.user.entity.Role;
 
-@Getter
 @Builder
+@Getter
 @RequiredArgsConstructor
 public class AuthUser implements OAuth2User {
 

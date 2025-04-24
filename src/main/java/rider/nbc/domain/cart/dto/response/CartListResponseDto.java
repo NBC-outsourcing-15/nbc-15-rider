@@ -2,7 +2,7 @@ package rider.nbc.domain.cart.dto.response;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import rider.nbc.domain.cart.entity.Cart;
+import rider.nbc.domain.cart.vo.Cart;
 import rider.nbc.domain.cart.vo.MenuItem;
 
 import java.util.List;

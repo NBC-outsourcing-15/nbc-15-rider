@@ -14,5 +14,4 @@ public class CartItemResponseDto {
 
     private final int price;
     private final int quantity;
-    //private List<int> options;
 }

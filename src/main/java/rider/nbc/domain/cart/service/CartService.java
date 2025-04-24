@@ -7,7 +7,7 @@ import rider.nbc.domain.cart.dto.request.CartAddRequestDto;
 import rider.nbc.domain.cart.dto.request.CartUpdateRequestDto;
 import rider.nbc.domain.cart.dto.response.CartItemResponseDto;
 import rider.nbc.domain.cart.dto.response.CartListResponseDto;
-import rider.nbc.domain.cart.entity.Cart;
+import rider.nbc.domain.cart.vo.Cart;
 import rider.nbc.domain.cart.exception.CartException;
 import rider.nbc.domain.cart.exception.CartExceptionCode;
 import rider.nbc.domain.cart.repository.CartRedisRepository;
@@ -37,7 +37,7 @@ public class CartService {
      */
     public CartListResponseDto getCartList(Long authId) {
         Cart cart = cartRedisRepository.findById(authId)
-                .orElseThrow(() -> new CartException(CartExceptionCode.NO_CONTENTS));
+                .orElseThrow(() -> new CartException(CartExceptionCode.CART_IS_EMPTY));
 
         return new CartListResponseDto(cart);
     }
@@ -85,7 +85,7 @@ public class CartService {
     @Transactional
     public CartListResponseDto updateCart(Long authId, CartUpdateRequestDto requestDto) {
         Cart cart = cartRedisRepository.findById(authId)
-                .orElseThrow(() -> new CartException(CartExceptionCode.NO_CONTENTS));
+                .orElseThrow(() -> new CartException(CartExceptionCode.CART_IS_EMPTY));
 
         //모든 menuId 꺼내기
         List<Long> menuIds = requestDto.getCartMenus().stream()
@@ -132,7 +132,7 @@ public class CartService {
      */
     public CartListResponseDto deleteSelectedMenu(Long authId, Long itemId) {
         Cart cart = cartRedisRepository.findById(authId)
-                .orElseThrow(() -> new CartException(CartExceptionCode.NO_CONTENTS));
+                .orElseThrow(() -> new CartException(CartExceptionCode.CART_IS_EMPTY));
 
         cart.removeMenuItem(itemId);
         cartRedisRepository.save(cart);

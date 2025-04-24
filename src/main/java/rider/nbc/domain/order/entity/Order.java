@@ -1,20 +1,18 @@
 package rider.nbc.domain.order.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import rider.nbc.domain.cart.entity.Cart;
 import rider.nbc.domain.order.enums.OrderStatus;
+import rider.nbc.domain.order.vo.OrderMenu;
+import rider.nbc.domain.store.entity.Store;
+import rider.nbc.domain.user.entity.User;
 import rider.nbc.global.config.TimeBaseEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author    : kimjungmin
@@ -22,7 +20,9 @@ import rider.nbc.global.config.TimeBaseEntity;
  */
 @Getter
 @Entity
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "orders")
 public class Order extends TimeBaseEntity {
 	@Id
@@ -30,19 +30,23 @@ public class Order extends TimeBaseEntity {
 	private Long id;
 
 	@Column
-	private int totalPrice = 0;
+	private Long totalPrice;
 
 	@Enumerated(EnumType.STRING)
 	private OrderStatus orderStatus;
 
-	//	@OneToOne
-	//	@JoinColumn(name = "cart_id")
-	//	private Cart cart;
+	@ManyToOne
+	@JoinColumn(name = "store_id")
+	private Store store;
 
-	public Order(Cart cart) {
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User user;
 
-		this.orderStatus = OrderStatus.WAITING;
-	}
+	@ElementCollection
+	@CollectionTable(name = "order_menus",joinColumns = @JoinColumn(name = "order_id"))
+	@Builder.Default
+	private List<OrderMenu> orderMenus = new ArrayList<>();
 
 	public void updateStatus(OrderStatus orderStatus) {
 		this.orderStatus = orderStatus;
