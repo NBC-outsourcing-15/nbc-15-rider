@@ -28,7 +28,6 @@ public class Cart implements Serializable {
 
 	private Long storeId;
 
-	// TODO 고쳐야 됨
 	private List<MenuItem> menus = new ArrayList<>();
 
 	@TimeToLive
