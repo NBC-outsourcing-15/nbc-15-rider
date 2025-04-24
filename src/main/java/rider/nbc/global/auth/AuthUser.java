@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import rider.nbc.domain.user.entity.Role;
 
+@Builder
 @Getter
 @Builder
 @RequiredArgsConstructor
