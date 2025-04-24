@@ -29,10 +29,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
         }
     }
 
-    default void validateSocialJoinEmail(String email) {
-        if (email != null && findByEmail(email).isPresent()) {
-            throw new UserException(UserExceptionCode.EMAIL_DUPLICATION);
-        }
+    default void validateSocialJoinEmail(String email, SocialType socialType) {
+        findByEmail(email).ifPresent(existingUser -> {
+            if (!existingUser.getSocialType().equals(socialType)) {
+                throw new UserException(UserExceptionCode.EMAIL_DUPLICATION);
+            }
+        });
     }
 
 
