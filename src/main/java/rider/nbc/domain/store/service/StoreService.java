@@ -109,7 +109,7 @@ public class StoreService {
      */
     public StoreReviewsResponseDto getStoreReviews(Long storeId) {
         Store store = storeRepository.findStoreWithStoreReviewsById(storeId)
-                .orElseThrow();
+                .orElseThrow(() -> new StoreException(StoreExceptionCode.NOT_FOUND_STORE));
 
         return StoreReviewsResponseDto.fromEntity(store);
     }
