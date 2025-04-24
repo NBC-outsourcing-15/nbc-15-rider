@@ -1,6 +1,7 @@
 package rider.nbc.domain.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class KakaoUserInfoResponse {
     private Long id;
+    @JsonProperty("kakao_account")
     private KakaoAccount kakaoAccount;
 
     // 커스텀 변환 메서드도 정의 가능
