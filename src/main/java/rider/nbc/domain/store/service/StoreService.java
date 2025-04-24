@@ -86,4 +86,16 @@ public class StoreService {
 
 		return store;
 	}
+
+	/**
+	 * 가게 단건 조회
+	 * 메뉴 정보를 포함한 가게 정보를 조회
+	 *
+	 * @param storeId 조회할 가게 ID
+	 * @return 조회된 가게 정보
+	 */
+	@Transactional(readOnly = true)
+	public Store getStoreWithMenus(Long storeId) {
+		return storeRepository.findStoreWithMenusByIdOrElseThrow(storeId);
+	}
 }

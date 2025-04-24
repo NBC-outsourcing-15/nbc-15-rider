@@ -251,4 +251,53 @@ class StoreServiceTest {
 			}
 		}
 	}
+
+	@Nested
+	@DisplayName("getStoreWithMenus 메서드는")
+	class Describe_getStoreWithMenus {
+
+		// 테스트에 사용할 공통 값
+		Long storeId = 1L;
+
+		@Nested
+		@DisplayName("유효한 가게 ID가 주어지면")
+		class Context_with_valid_store_id {
+
+			@Test
+			@DisplayName("메뉴 정보를 포함한 가게 정보를 반환한다")
+			void it_returns_store_with_menus() {
+				// Given
+				User ceoUser = defaultUser(Role.CEO);
+				Store store = StoreFixture.storeFrom(storeId, ceoUser);
+
+				when(storeRepository.findStoreWithMenusByIdOrElseThrow(storeId)).thenReturn(store);
+
+				// When
+				Store result = storeService.getStoreWithMenus(storeId);
+
+				// Then
+				assertThat(result).isNotNull();
+				assertThat(result.getId()).isEqualTo(storeId);
+				verify(storeRepository).findStoreWithMenusByIdOrElseThrow(storeId);
+			}
+		}
+
+		@Nested
+		@DisplayName("존재하지 않는 가게 ID가 주어지면")
+		class Context_with_non_existent_store_id {
+
+			@Test
+			@DisplayName("NOT_FOUND_STORE 예외를 던진다")
+			void it_throws_not_found_store_exception() {
+				// Given
+				when(storeRepository.findStoreWithMenusByIdOrElseThrow(storeId))
+					.thenThrow(new StoreException(StoreExceptionCode.NOT_FOUND_STORE));
+
+				// When & Then
+				assertThatThrownBy(() -> storeService.getStoreWithMenus(storeId))
+					.isInstanceOf(StoreException.class)
+					.hasMessage(StoreExceptionCode.NOT_FOUND_STORE.getMessage());
+			}
+		}
+	}
 }
