@@ -77,7 +77,7 @@ public class User extends TimeBaseEntity {
 
 	// Store CEO 확인용 로직
 	public boolean isCEO() {
-		return role.equals(Role.CEO);
+		return role.equals(Role.ROLE_CEO);
 	}
 
     // 결제 성공으로 인한 포인트 추가
