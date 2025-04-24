@@ -300,4 +300,96 @@ class StoreServiceTest {
 			}
 		}
 	}
+
+	@Nested
+	@DisplayName("deleteStore 메서드는")
+	class Describe_deleteStore {
+
+		// 테스트에 사용할 공통 값
+		Long storeId = 1L;
+		Long userId = 1L;
+
+		@Nested
+		@DisplayName("유효한 사용자와 가게 ID가 주어지면")
+		class Context_with_valid_user_and_store_id {
+
+			@Test
+			@DisplayName("가게를 삭제한다")
+			void it_deletes_store() {
+				// Given
+				User owner = defaultUser(Role.CEO);
+				Store store = StoreFixture.storeFrom(storeId, owner);
+
+				when(storeRepository.findByIdOrElseThrow(storeId)).thenReturn(store);
+				when(userRepository.findByOwnerIdOrThrow(userId)).thenReturn(owner);
+
+				// When
+				storeService.deleteStore(storeId, userId);
+
+				// Then
+				verify(storeRepository).delete(store);
+			}
+		}
+
+		@Nested
+		@DisplayName("존재하지 않는 가게 ID가 주어지면")
+		class Context_with_non_existent_store_id {
+
+			@Test
+			@DisplayName("NOT_FOUND_STORE 예외를 던진다")
+			void it_throws_not_found_store_exception() {
+				// Given
+				when(storeRepository.findByIdOrElseThrow(storeId))
+					.thenThrow(new StoreException(StoreExceptionCode.NOT_FOUND_STORE));
+
+				// When & Then
+				assertThatThrownBy(() -> storeService.deleteStore(storeId, userId))
+					.isInstanceOf(StoreException.class)
+					.hasMessage(StoreExceptionCode.NOT_FOUND_STORE.getMessage());
+			}
+		}
+
+		@Nested
+		@DisplayName("CEO가 아닌 사용자가 요청하면")
+		class Context_with_non_ceo_user {
+
+			@Test
+			@DisplayName("NOT_CEO 예외를 던진다")
+			void it_throws_not_ceo_exception() {
+				// Given
+				User nonCeoUser = defaultUser(Role.USER);
+				Store store = mock(Store.class);
+
+				when(storeRepository.findByIdOrElseThrow(storeId)).thenReturn(store);
+				when(userRepository.findByOwnerIdOrThrow(userId)).thenReturn(nonCeoUser);
+
+				// When & Then
+				assertThatThrownBy(() -> storeService.deleteStore(storeId, userId))
+					.isInstanceOf(StoreException.class)
+					.hasMessage(StoreExceptionCode.NOT_CEO.getMessage());
+			}
+		}
+
+		@Nested
+		@DisplayName("가게 소유자가 아닌 사용자가 요청하면")
+		class Context_with_non_owner_user {
+
+			@Test
+			@DisplayName("NOT_STORE_OWNER 예외를 던진다")
+			void it_throws_not_store_owner_exception() {
+				// Given
+				User ceoUser = defaultUser(Role.CEO);
+				Store store = mock(Store.class);
+
+				when(storeRepository.findByIdOrElseThrow(storeId)).thenReturn(store);
+				when(userRepository.findByOwnerIdOrThrow(userId)).thenReturn(ceoUser);
+				when(store.isOwner(ceoUser)).thenReturn(false);
+
+				// When & Then
+				assertThatThrownBy(() -> storeService.deleteStore(storeId, userId))
+					.isInstanceOf(StoreException.class)
+					.hasMessage(StoreExceptionCode.NOT_STORE_OWNER.getMessage());
+			}
+		}
+	}
 }
