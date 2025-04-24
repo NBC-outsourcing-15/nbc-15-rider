@@ -15,7 +15,6 @@ public class OrderMenu {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @MapsId("orderId")
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;

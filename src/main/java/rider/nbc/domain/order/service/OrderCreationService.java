@@ -8,7 +8,6 @@ import rider.nbc.domain.cart.exception.CartException;
 import rider.nbc.domain.cart.exception.CartExceptionCode;
 import rider.nbc.domain.cart.repository.CartRedisRepository;
 import rider.nbc.domain.cart.vo.MenuItem;
-import rider.nbc.domain.menu.repository.MenuRepository;
 import rider.nbc.domain.order.dto.responseDto.OrderResponseDto;
 import rider.nbc.domain.order.entity.Order;
 import rider.nbc.domain.order.entity.OrderMenu;
@@ -21,9 +20,7 @@ import rider.nbc.domain.store.entity.Store;
 import rider.nbc.domain.store.entity.StoreStatus;
 import rider.nbc.domain.store.repository.StoreRepository;
 import rider.nbc.domain.user.entity.User;
-import rider.nbc.domain.user.repository.UserRepository;
 
-import java.time.LocalTime;
 import java.util.List;
 
 
@@ -45,7 +42,9 @@ public class OrderCreationService {
 
         // Order 만들기
         Store store = storeRepository.findByIdOrElseThrow(cart.getStoreId());
-        checkStoreAvailable(store);
+        if(! store.getStoreStatus().equals(StoreStatus.OPEN)){
+            throw new OrderException(OrderExceptionCode.STORE_UNAVAILABLE);
+        }
 
         // 최소주문금액
         Long totalPrice = cart.getMenus().stream()
@@ -61,11 +60,10 @@ public class OrderCreationService {
                 .orderStatus(OrderStatus.WAITING)
                 .build();
         Order savedOrder = orderRepository.save(order);
-        // OrderMenu 만들기
+        // OrderMenu
         List<OrderMenu> orderMenus = cart.getMenus().stream()
                 .map(menuItem -> new OrderMenu(order, menuItem))
                 .toList();
-        // 장바구니 조회하면서 OrderMenu 들 만들기
         orderMenuRepository.saveAll(orderMenus);
 
         // 장바구니 비우기
@@ -92,25 +90,4 @@ public class OrderCreationService {
             throw new OrderException(OrderExceptionCode.NOT_ENOUGH_POINT);
         }
     }
-
-
-    private void checkStoreAvailable(Store store){
-        if(! store.getStoreStatus().equals(StoreStatus.OPEN)){
-            throw new OrderException(OrderExceptionCode.STORE_UNAVAILABLE);
-        }
-
-        // 운영시간
-        LocalTime now = LocalTime.now();
-        LocalTime openTime = store.getOperatingHours().getOpenTime();
-        LocalTime closeTime = store.getOperatingHours().getCloseTime();
-
-        // 현재시간 비교하고 안맞으면 에러
-        if (now.isBefore(openTime) || now.isAfter(closeTime)) {
-            throw new OrderException(OrderExceptionCode.STORE_UNAVAILABLE);
-        }
-
-        // 휴무일
-        // 현재 날짜 비교하고 안맞으면 에러
-    }
-
 }
