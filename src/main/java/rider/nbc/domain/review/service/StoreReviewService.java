@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import rider.nbc.domain.order.entity.Order;
 import rider.nbc.domain.order.enums.OrderStatus;
+import rider.nbc.domain.order.exception.OrderException;
+import rider.nbc.domain.order.exception.OrderExceptionCode;
 import rider.nbc.domain.order.repository.OrderRepository;
 import rider.nbc.domain.order.vo.OrderMenu;
 import rider.nbc.domain.review.dto.request.StoreReviewCreateRequest;
@@ -47,7 +49,7 @@ public class StoreReviewService {
         }
 
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(()-> new OrderException(OrderExceptionCode.INVALID_ORDER_ID));
         if (!order.getOrderStatus().equals(OrderStatus.DONE)) {
             throw new StoreReviewException(StoreReviewExceptionCode.ORDER_NOT_DONE);
         }
