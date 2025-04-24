@@ -15,7 +15,6 @@ import rider.nbc.domain.user.entity.Role;
 
 @Builder
 @Getter
-@Builder
 @RequiredArgsConstructor
 public class AuthUser implements OAuth2User {
 

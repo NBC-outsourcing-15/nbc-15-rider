@@ -1,12 +1,10 @@
 package rider.nbc.domain.order.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import rider.nbc.domain.cart.entity.Cart;
@@ -15,6 +13,7 @@ import rider.nbc.domain.cart.repository.CartRedisRepository;
 import rider.nbc.domain.cart.vo.MenuItem;
 import rider.nbc.domain.order.dto.requestDto.OrderStatusRequestDto;
 import rider.nbc.domain.order.dto.responseDto.OrderResponseDto;
+import rider.nbc.domain.order.entity.Order;
 import rider.nbc.domain.order.enums.OrderStatus;
 import rider.nbc.domain.order.exception.OrderException;
 import rider.nbc.domain.order.repository.OrderRepository;
@@ -23,13 +22,14 @@ import rider.nbc.domain.store.entity.StoreStatus;
 import rider.nbc.domain.store.repository.StoreRepository;
 import rider.nbc.domain.user.entity.Role;
 import rider.nbc.domain.user.entity.User;
+import rider.nbc.domain.user.repository.UserRepository;
 import rider.nbc.global.auth.AuthUser;
-import rider.nbc.domain.order.entity.Order;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -46,23 +46,11 @@ class OrderServiceTest {
     @Mock
     private OrderRepository orderRepository;
 
+    @Mock
+    private UserRepository userRepository;
+
     @InjectMocks
     private OrderService orderService;
-
-    @Spy
-    private Cart cart;
-
-    private final MenuItem menuItem = MenuItem.builder()
-            .menuId(1L)
-            .price(10000L)
-            .name("짜장면")
-            .quantity(1)
-            .build();
-
-    @BeforeEach
-    void setUp(){
-        cart=new Cart(1L, 1L, menuItem);
-    }
 
     @Test
     @DisplayName("create 성공 -정상_생성 ")
@@ -71,6 +59,7 @@ class OrderServiceTest {
         User user = User.builder().id(1L).point(30000L).build();
 
         // Cart 생성
+        Cart cart = new Cart();
         MenuItem menuItem = MenuItem.builder()
                 .menuId(1L)
                 .price(10000L)
@@ -96,6 +85,7 @@ class OrderServiceTest {
                 .totalPrice(10000L)
                 .build();
 
+        given(userRepository.findActiveByIdOrThrow(any())).willReturn(user);
         given(cartRedisRepository.findById(1L)).willReturn(Optional.of(cart));
         given(storeRepository.findByIdOrElseThrow(10L)).willReturn(store);
         given(orderRepository.save(any(Order.class))).willReturn(savedOrder);
@@ -122,6 +112,7 @@ class OrderServiceTest {
         User user = new User();
         ReflectionTestUtils.setField(user, "id", userId);
 
+        given(userRepository.findActiveByIdOrThrow(any())).willReturn(user);
         given(cartRedisRepository.findById(userId)).willReturn(Optional.empty());
 
         // expect
@@ -150,6 +141,7 @@ class OrderServiceTest {
                 .build();
 
         Cart cart = new Cart(userId, storeId, menuItem);
+        given(userRepository.findActiveByIdOrThrow(any())).willReturn(user);
         given(cartRedisRepository.findById(userId)).willReturn(Optional.of(cart));
         given(storeRepository.findByIdOrElseThrow(storeId)).willReturn(closedStore);
 
@@ -181,7 +173,7 @@ class OrderServiceTest {
                 .build();
 
         Cart cart = new Cart(userId, storeId, menuItem);
-
+        given(userRepository.findActiveByIdOrThrow(any())).willReturn(user);
         given(cartRedisRepository.findById(userId)).willReturn(Optional.of(cart));
         given(storeRepository.findByIdOrElseThrow(storeId)).willReturn(store);
 
@@ -211,6 +203,7 @@ class OrderServiceTest {
                 .build();
 
         Cart cart = new Cart(userId, storeId, menuItem);
+        given(userRepository.findActiveByIdOrThrow(any())).willReturn(user);
         given(cartRedisRepository.findById(userId)).willReturn(Optional.of(cart));
         given(storeRepository.findByIdOrElseThrow(storeId)).willReturn(store);
 
@@ -222,7 +215,7 @@ class OrderServiceTest {
     @DisplayName("patchOrderStatus 성공")
     void patchOrderStatus_success() {
         // given
-        AuthUser authUser = new AuthUser(1L,"exam@exam.com", "사장",Role.CEO);
+        AuthUser authUser = new AuthUser(1L, "exam@exam.com", "사장", Role.CEO);
 
         User owner = new User();
         ReflectionTestUtils.setField(owner, "id", 1L);
@@ -234,6 +227,7 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(order, "store", store);
         ReflectionTestUtils.setField(order, "user", owner);
         order.updateStatus(OrderStatus.WAITING);
+
 
         given(orderRepository.findById(1L)).willReturn(Optional.of(order));
         OrderStatusRequestDto dto = new OrderStatusRequestDto("ACCEPTED");
@@ -250,7 +244,7 @@ class OrderServiceTest {
     @DisplayName("patchOrderStatus 실패 - 사장 role 아님")
     void patchOrderStatus_fail_notCEO() {
         // given
-        AuthUser authUser = new AuthUser(1L,"exam@exam.com", "손님",Role.USER);
+        AuthUser authUser = new AuthUser(1L, "exam@exam.com", "손님", Role.USER);
         OrderStatusRequestDto dto = new OrderStatusRequestDto("ACCEPTED");
 
         // when & then
@@ -262,7 +256,7 @@ class OrderServiceTest {
     @DisplayName("patchOrderStatus 실패 - 본인 가게 아님")
     void patchOrderStatus_fail_NotMyStore() {
         // given
-        AuthUser authUser = new AuthUser(1L,"exam@exam.com", "사장",Role.CEO);
+        AuthUser authUser = new AuthUser(1L, "exam@exam.com", "사장", Role.CEO);
         OrderStatusRequestDto dto = new OrderStatusRequestDto("ACCEPTED");
 
         User realowner = new User();
@@ -287,7 +281,7 @@ class OrderServiceTest {
     @DisplayName("patchOrderStatus 실패 - 잘못된_상태변경")
     void patchOrderStatus_fail_InvaliableStatus() {
         // given
-        AuthUser authUser = new AuthUser(1L,"exam@exam.com", "사장",Role.CEO);
+        AuthUser authUser = new AuthUser(1L, "exam@exam.com", "사장", Role.CEO);
 
         User owner = new User();
         ReflectionTestUtils.setField(owner, "id", 1L);
