@@ -46,7 +46,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     userRepository.save(User.builder()
                             .email(email)
                             .nickname(nickname)
-                            .role(Role.USER)
+                            .role(Role.ROLE_USER)
                             .status(UserStatus.ACTIVE)
                             .socialType(SocialType.KAKAO)
                             .build()));
@@ -65,7 +65,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                             .nickname(nickname)
                             .socialId(socialId)
                             .socialType(SocialType.NAVER)
-                            .role(Role.USER)
+                            .role(Role.ROLE_USER)
                             .status(UserStatus.ACTIVE)
                             .build()));
 
