@@ -1,22 +1,18 @@
 package rider.nbc.domain.cart.service;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import rider.nbc.domain.cart.dto.request.CartAddRequestDto;
 import rider.nbc.domain.cart.dto.request.CartUpdateRequestDto;
 import rider.nbc.domain.cart.dto.response.CartItemResponseDto;
 import rider.nbc.domain.cart.dto.response.CartListResponseDto;
-import rider.nbc.domain.cart.entity.Cart;
+import rider.nbc.domain.cart.vo.Cart;
 import rider.nbc.domain.cart.exception.CartException;
 import rider.nbc.domain.cart.repository.CartRedisRepository;
 import rider.nbc.domain.cart.vo.MenuItem;
@@ -31,8 +27,11 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -271,19 +270,12 @@ class CartServiceTest {
     class deleteCart_Test{
         Long userId = 1L;
 
-        Long store1Id = 101L;
-        Menu menu1 = new Menu();
-        Menu menu2 = new Menu();
-
-        List<MenuItem> menuItems = new ArrayList<>(List.of(
-                new MenuItem(1L, null, null, 2),
-                new MenuItem(2L, null, null, 1)
-        ));
-
         @Test
         @DisplayName("deleteCart 성공 - 장바구니 초기화")
         void deleteCart_success(){
+            cartService.deleteCart(userId);
 
+            verify(cartRedisRepository,times(1)).deleteById(anyLong());
         }
     }
 }

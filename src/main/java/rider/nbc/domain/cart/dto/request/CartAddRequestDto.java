@@ -16,5 +16,4 @@ public class CartAddRequestDto {
     @Min(value = 1, message = "메뉴는 1개이상부터 선택가능합니다.")
     @NotNull(message = "장바구니에 담으려면 수량을 필수로 입력해야합니다.")
     private int quantity;
-    //private List<int> options;
 }
