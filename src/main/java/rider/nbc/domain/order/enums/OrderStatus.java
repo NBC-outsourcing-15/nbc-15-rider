@@ -30,4 +30,13 @@ public enum OrderStatus {
 			.orElseThrow(() -> new OrderException(OrderExceptionCode.INVALID_ORDER_ID));
 	 }
 
+	public boolean canTransitionTo(OrderStatus nextStatus) {
+        return switch (this) {
+            case WAITING -> nextStatus == ACCEPTED || nextStatus == CANCELED;
+            case ACCEPTED -> nextStatus == DONE || nextStatus == CANCELED;
+            case DONE -> false; // 완료된 주문은 상태 변경 불가
+            case CANCELED -> false; // 취소된 주문도 변경 불가
+            default -> false;
+        };
+	}
 }

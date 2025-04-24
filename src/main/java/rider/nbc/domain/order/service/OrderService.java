@@ -47,13 +47,18 @@ public class OrderService {
         }
 
         OrderStatus orderStatus = OrderStatus.of(statusRequestDto.getOrderStatus());
+        // 맞으면 주문 상태 변경 (같은 상태인건 변경불가능, 취소된 주문도 변경불가능, 완료도 불가능)
+        // 대기->준비중->완료 단계별로만 움직일 수 있음.
+        checkCanChangeStatus(order.getOrderStatus(), orderStatus);
 
-        // 맞으면 주문 상태 변경 (같은 상태인건 변경불가능, 취소된 주문도 변경불가능)
-        if( order.getOrderStatus().equals(OrderStatus.CANCELED) ){
-            throw new OrderException(OrderExceptionCode.CANT_CHANGE_CANCELED);
-        }
         order.updateStatus(orderStatus);
 
         return orderStatus.getDisplayName();
+    }
+
+    private void checkCanChangeStatus(OrderStatus currentStatus, OrderStatus changeStatus) {
+        if (!currentStatus.canTransitionTo(changeStatus)) {
+            throw new OrderException(OrderExceptionCode.CANT_CHANGE_STATUS);
+        }
     }
 }

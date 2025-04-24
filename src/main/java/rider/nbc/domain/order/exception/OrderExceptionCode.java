@@ -18,8 +18,7 @@ public enum OrderExceptionCode {
     INVALID_STATUS(false,HttpStatus.BAD_REQUEST,"지원하지 않는 상태입니다."),
 
     NOT_OWNER(false, HttpStatus.UNAUTHORIZED, "해당 가게 사장님만 주문 상태를 변경할 수 있어요."),
-    CANT_CHANGE_CANCELED(false, HttpStatus.BAD_REQUEST, "취소된 주문은 상태를 변경할 수 없습니다.");
-
+    CANT_CHANGE_STATUS(false, HttpStatus.BAD_REQUEST, "현재 상태에서 해당 상태로 변경이 불가능합니다.");
 
 
     private final boolean isSuccess;
