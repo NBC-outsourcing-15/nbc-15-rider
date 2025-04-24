@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import rider.nbc.domain.user.exception.UserException;
 import rider.nbc.domain.user.exception.UserExceptionCode;
+import rider.nbc.domain.user.repository.UserRepository;
 import rider.nbc.global.config.TimeBaseEntity;
 
 import static rider.nbc.domain.store.constant.StoreConstants.ROLE_CEO;
@@ -62,6 +63,18 @@ public class User extends TimeBaseEntity {
         if (!encoder.matches(rawPassword, this.password)) {
             throw new UserException(UserExceptionCode.INVALID_PASSWORD);
         }
+    }
+
+    public void checkEmailDuplicate(UserRepository userRepository, String newEmail) {
+        if (!this.email.equals(newEmail) && userRepository.findByEmail(newEmail).isPresent()) {
+            throw new UserException(UserExceptionCode.EMAIL_DUPLICATION);
+        }
+    }
+
+    public void updateUserInfo(String email, String nickname, String phone) {
+        this.email = email;
+        this.nickname = nickname;
+        this.phone = phone;
     }
 
     public void softDelete() {
