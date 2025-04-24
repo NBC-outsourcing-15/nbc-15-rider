@@ -58,4 +58,22 @@ public class OrderController {
         return ResponseEntity.ok(CommonResponse.of(true, HttpStatus.OK.value()
                 , "주문이" + result + "으로 변경되었습니다."));
     }
+
+    /**
+     * [Controller] 주문 조회
+     *
+     * @param authUser 로그인한 유저 Id
+     * @return 그 유저가 담은 장바구니로 만든 주문내역
+     */
+    @GetMapping("/{orderId}")
+    public ResponseEntity<CommonResponse<OrderResponseDto>> getOrder(
+            @AuthenticationPrincipal AuthUser authUser,
+            @PathVariable Long orderId
+    ) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(true,
+                        HttpStatus.CREATED.value(),
+                        "주문 조회 완료",
+                        orderService.getOrder(authUser.getId(),orderId)));
+    }
 }

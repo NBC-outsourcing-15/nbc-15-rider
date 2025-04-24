@@ -133,4 +133,9 @@ public class OrderService {
             throw new OrderException(OrderExceptionCode.CANT_CHANGE_STATUS);
         }
     }
+
+    public OrderResponseDto getOrder(Long authId, Long orderId) {
+        Order order = orderRepository.findByIdOrElseThrow(authId, orderId);
+        return OrderResponseDto.of(order);
+    }
 }
