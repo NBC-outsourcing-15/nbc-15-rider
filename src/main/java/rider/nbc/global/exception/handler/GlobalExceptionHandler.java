@@ -29,8 +29,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<CommonResponses<ValidationError>> inputValidationExceptionHandler(BindingResult result) {
-        log.error(result.getFieldErrors().toString());
+    public ResponseEntity<CommonResponses<ValidationError>> inputValidationExceptionHandler(
+            MethodArgumentNotValidException methodArgumentNotValidException
+    ) {
+        LogUtils.logError(methodArgumentNotValidException);
+        BindingResult result = methodArgumentNotValidException.getBindingResult();
 
         List<ValidationError> validationErrors = result.getFieldErrors().stream()
                 .map(fieldError -> ValidationError.builder()
@@ -47,14 +50,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<CommonResponse<?>> handleHttpMessageNotReadableException(
-            HttpMessageNotReadableException httpMessageNotReadableException) {
+                    HttpMessageNotReadableException httpMessageNotReadableException
+            ) {
         Throwable cause = httpMessageNotReadableException.getCause();
         if (cause instanceof ValueInstantiationException && cause.getCause() instanceof BaseException baseException) {
+            LogUtils.logError(baseException);
 
             return ResponseEntity.status(baseException.getHttpStatus())
                     .body(CommonResponse.of(false, baseException.getHttpStatus().value(), baseException.getMessage()));
         }
 
+        LogUtils.logError(httpMessageNotReadableException);
         return ResponseEntity.badRequest()
                 .body(CommonResponse.of(false, HttpStatus.BAD_REQUEST.value(), "잘못된 요청입니다."));
     }
