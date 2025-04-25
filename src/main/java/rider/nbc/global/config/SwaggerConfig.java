@@ -46,8 +46,8 @@ public class SwaggerConfig {
 
 	private Info apiInfo() {
 		return new Info()
-			.title("News Feeds API")
-			.description("News-Feeds 팀 프로젝트 과제")
+			.title("배달 어플")
+			.description("배달 어플 팀 프로젝트")
 			.version("1.0");
 	}
 }
