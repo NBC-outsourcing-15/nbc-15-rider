@@ -16,8 +16,10 @@ public enum OrderExceptionCode {
 
     INVALID_ORDER_ID(false, HttpStatus.NOT_FOUND, "유효한 주문 번호가 아닙니다."),
     INVALID_STATUS(false,HttpStatus.BAD_REQUEST,"지원하지 않는 상태입니다."),
+    NO_PERMISSION(false, HttpStatus.FORBIDDEN, "해당 요청에 대한 권한이 없습니다."),
 
-    NOT_OWNER(false, HttpStatus.UNAUTHORIZED, "해당 가게 사장님만 주문 상태를 변경할 수 있어요."),
+
+    NOT_OWNER(false, HttpStatus.FORBIDDEN, "해당 가게 사장님만 주문 상태를 변경할 수 있어요."),
     CANT_CHANGE_STATUS(false, HttpStatus.BAD_REQUEST, "현재 상태에서 해당 상태로 변경이 불가능합니다.");
 
 

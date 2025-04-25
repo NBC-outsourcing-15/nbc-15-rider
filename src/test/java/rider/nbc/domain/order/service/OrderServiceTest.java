@@ -1,6 +1,8 @@
 package rider.nbc.domain.order.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,9 +15,11 @@ import rider.nbc.domain.cart.repository.CartRedisRepository;
 import rider.nbc.domain.cart.vo.MenuItem;
 import rider.nbc.domain.order.dto.requestDto.OrderStatusRequestDto;
 import rider.nbc.domain.order.dto.responseDto.OrderResponseDto;
+import rider.nbc.domain.order.dto.responseDto.OrderStatusResponseDto;
 import rider.nbc.domain.order.entity.Order;
 import rider.nbc.domain.order.enums.OrderStatus;
 import rider.nbc.domain.order.exception.OrderException;
+import rider.nbc.domain.order.exception.OrderExceptionCode;
 import rider.nbc.domain.order.repository.OrderRepository;
 import rider.nbc.domain.store.entity.Store;
 import rider.nbc.domain.store.entity.StoreStatus;
@@ -224,19 +228,20 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(store, "owner", owner);
 
         Order order = new Order();
+        ReflectionTestUtils.setField(order, "id", 1L);
         ReflectionTestUtils.setField(order, "store", store);
         ReflectionTestUtils.setField(order, "user", owner);
         order.updateStatus(OrderStatus.WAITING);
 
 
-        given(orderRepository.findById(1L)).willReturn(Optional.of(order));
+        given(orderRepository.findByIdOrElseThrow(1L)).willReturn(order);
         OrderStatusRequestDto dto = new OrderStatusRequestDto("ACCEPTED");
 
         // when
-        String result = orderService.patchOrderStatus(authUser, 1L, dto);
+        OrderStatusResponseDto result = orderService.patchOrderStatus(authUser, 1L, dto);
 
         // then
-        assertEquals("조리중", result);
+        assertEquals(OrderStatus.ACCEPTED, result.getOrderStatus());
         assertEquals(OrderStatus.ACCEPTED, order.getOrderStatus());
     }
 
@@ -266,11 +271,12 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(store, "owner", realowner);
 
         Order order = new Order();
+        ReflectionTestUtils.setField(order, "id", 1L);
         ReflectionTestUtils.setField(order, "store", store);
         ReflectionTestUtils.setField(order, "user", realowner);
         order.updateStatus(OrderStatus.WAITING);
 
-        given(orderRepository.findById(1L)).willReturn(Optional.of(order));
+        given(orderRepository.findByIdOrElseThrow(1L)).willReturn(order);
 
         // when & then
         assertThrows(OrderException.class, () ->
@@ -290,11 +296,12 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(store, "owner", owner);
 
         Order order = new Order();
+        ReflectionTestUtils.setField(order, "id", 1L);
         ReflectionTestUtils.setField(order, "store", store);
         ReflectionTestUtils.setField(order, "user", owner);
         order.updateStatus(OrderStatus.WAITING);
 
-        given(orderRepository.findById(1L)).willReturn(Optional.of(order));
+        given(orderRepository.findByIdOrElseThrow(1L)).willReturn(order);
         OrderStatusRequestDto dto = new OrderStatusRequestDto("DONE");
 
         // when & then
@@ -302,4 +309,102 @@ class OrderServiceTest {
                 orderService.patchOrderStatus(authUser, 1L, dto));
     }
 
+    @Nested
+    @DisplayName("주문 조회")
+    class getOrder_Orders_Test {
+        Order order;
+        AuthUser userAuthUser;
+        AuthUser ceoAuthUser;
+
+        @BeforeEach
+        void setUp() {
+            User user = new User();
+            ReflectionTestUtils.setField(user, "id", 1L);
+
+            User ceo = new User();
+            ReflectionTestUtils.setField(ceo, "id", 2L);
+
+            Store store = new Store();
+            ReflectionTestUtils.setField(store, "owner", ceo);
+            ReflectionTestUtils.setField(store, "id", 10L);
+
+            order = new Order();
+            ReflectionTestUtils.setField(order, "id", 100L);
+            ReflectionTestUtils.setField(order, "store", store);
+            ReflectionTestUtils.setField(order, "user", user);
+            order.updateStatus(OrderStatus.WAITING);
+
+
+            userAuthUser = new AuthUser(1L, "e@email.com", "고객", Role.USER);
+            ceoAuthUser = new AuthUser(2L, "ce@email.com", "사장", Role.CEO);
+        }
+
+        @Test
+        @DisplayName("getOrder 성공 - 사용자 본인주문 조회 성공")
+        void getOrder_success() {
+            // given
+            given(orderRepository.findByIdOrElseThrow(100L)).willReturn(order);
+
+            // when
+            OrderResponseDto result = orderService.getOrder(userAuthUser, 100L);
+
+            // then
+            assertEquals(100L, result.getOrderId());
+        }
+
+
+        @Test
+        @DisplayName("getOrder 성공 - 주문 가게 사장이 주문 조회 성공")
+        void getOrder_success_ceo() {
+            // given
+            given(orderRepository.findByIdOrElseThrow(100L)).willReturn(order);
+
+            // when
+            OrderResponseDto result = orderService.getOrder(ceoAuthUser, 100L);
+
+            // then
+            assertEquals(100L, result.getOrderId());
+        }
+
+
+        @Test
+        void getOrder실패_권한없는유저() {
+            // given
+            AuthUser stranger = new AuthUser(999L,"err@email.com", "고객2", Role.USER);
+            given(orderRepository.findByIdOrElseThrow(100L)).willReturn(order);
+
+            // when & then
+            OrderException ex = assertThrows(OrderException.class, () ->
+                    orderService.getOrder(stranger, 100L));
+            assertEquals(OrderExceptionCode.INVALID_ORDER_ID, ex.getErrorCode());
+
+        }
+
+        @Test
+        void getAllOrders성공_유저_내주문이력_조회() {
+            // given
+            given(orderRepository.findAllByUserId(1L)).willReturn(List.of(order));
+
+            // when
+            List<OrderResponseDto> results = orderService.getAllOrders(userAuthUser);
+
+            // then
+            assertEquals(1, results.size());
+            assertEquals(100L, results.get(0).getOrderId());
+        }
+
+        @Test
+        void getAllOrders성공_사장_내가게주문조회() {
+            // given
+            given(orderRepository.findAllByStoreOwnerId(2L)).willReturn(List.of(order));
+
+            // when
+            List<OrderResponseDto> results = orderService.getAllOrders(ceoAuthUser);
+
+            // then
+            assertEquals(1, results.size());
+            assertEquals(100L, results.get(0).getOrderId());
+        }
+
+    }
 }

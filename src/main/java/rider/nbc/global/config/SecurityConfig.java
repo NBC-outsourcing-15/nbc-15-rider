@@ -53,6 +53,9 @@ public class SecurityConfig {
 
                 // 요청별 권한 설정
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/toss.html").permitAll()
+                        .requestMatchers("/api/v1/points/charge/success*").permitAll()
+                        .requestMatchers("/api/v1/points/charge/fail*").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/stores/**").hasRole("CEO") // 가게생성
                         .requestMatchers(HttpMethod.PUT, "/api/v1/stores/**").hasRole("CEO") // 가게수정
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/stores/**").hasRole("CEO") // 가게삭제
