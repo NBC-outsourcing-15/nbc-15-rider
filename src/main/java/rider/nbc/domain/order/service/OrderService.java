@@ -107,7 +107,7 @@ public class OrderService {
 
     @Transactional
     public OrderStatusResponseDto patchOrderStatus(AuthUser authUser, Long orderId, OrderStatusRequestDto statusRequestDto) {
-        if (authUser.getRole() != Role.CEO) {
+        if (authUser.getRole() != Role.ROLE_CEO) {
             throw new OrderException(OrderExceptionCode.NOT_OWNER);
         }
         //orderId의 가게를 받아옴
@@ -151,17 +151,17 @@ public class OrderService {
     }
 
     private boolean isUserOrder(AuthUser authUser, Order order) {
-        return authUser.getRole() == Role.USER && order.getUser().getId().equals(authUser.getId());
+        return authUser.getRole() == Role.ROLE_USER && order.getUser().getId().equals(authUser.getId());
     }
 
     private boolean isCeoOrder(AuthUser authUser, Order order) {
-        return authUser.getRole() == Role.CEO && order.getStore().getOwner().getId().equals(authUser.getId());
+        return authUser.getRole() == Role.ROLE_CEO && order.getStore().getOwner().getId().equals(authUser.getId());
     }
 
     public List<OrderResponseDto> getAllOrders(AuthUser authUser) {
         List<Order> orders;
 
-        if (authUser.getRole() == Role.USER) {
+        if (authUser.getRole() == Role.ROLE_USER) {
             // 내 주문 이력 조회
             orders = orderRepository.findAllByUserId(authUser.getId());
 
