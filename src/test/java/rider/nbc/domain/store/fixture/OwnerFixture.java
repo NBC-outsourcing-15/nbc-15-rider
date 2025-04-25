@@ -18,12 +18,12 @@ public class OwnerFixture {
 	}
 
 	public static User UserFrom(Long id, Role role) {
-		String email = role == Role.CEO ? "ceo@ceo.com" : "non-ceo@ceo.com";
+		String email = role == Role.ROLE_CEO ? "ceo@ceo.com" : "non-ceo@ceo.com";
 
 		return User.builder()
 			.id(id)
 			.email(email)
-			.role(Role.CEO)
+			.role(role)
 			.build();
 	}
 }

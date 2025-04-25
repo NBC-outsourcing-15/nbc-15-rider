@@ -1,5 +1,7 @@
 package rider.nbc.domain.menu.controller;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import rider.nbc.domain.keyword.service.KeywordService;
 import rider.nbc.domain.menu.dto.MenuCreateRequestDto;
 import rider.nbc.domain.menu.dto.MenuResponseDto;
 import rider.nbc.domain.menu.dto.MenuUpdateRequestDto;
@@ -29,6 +32,7 @@ import rider.nbc.global.response.CommonResponse;
 public class MenuController {
 
 	private final MenuService menuService;
+	private final KeywordService keywordService;
 
 	/**
 	 * 메뉴를 생성
@@ -47,6 +51,8 @@ public class MenuController {
 		// 현재 인증된 사용자 정보 가져오기
 		Long userId = authUser.getId();
 		Menu savedMenu = menuService.createMenu(userId, storeId, requestDto);
+		CompletableFuture.runAsync(() -> keywordService.insertKeyword(storeId, savedMenu));
+
 		MenuResponseDto responseDto = MenuResponseDto.fromEntity(savedMenu);
 
 		return ResponseEntity.status(HttpStatus.CREATED)
@@ -75,6 +81,8 @@ public class MenuController {
 		@AuthenticationPrincipal AuthUser authUser) {
 		Long userId = authUser.getId();
 		Menu updatedMenu = menuService.updateMenu(userId, storeId, menuId, requestDto);
+		CompletableFuture.runAsync(() -> keywordService.insertKeyword(storeId, updatedMenu));
+		
 		MenuResponseDto responseDto = MenuResponseDto.fromEntity(updatedMenu);
 
 		return ResponseEntity.status(HttpStatus.OK)
