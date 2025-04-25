@@ -63,7 +63,7 @@ class StoreServiceTest {
 			@DisplayName("가게를 생성하고 반환한다")
 			void it_creates_and_returns_store() {
 				// Given
-				User ceoUser = defaultUser(Role.CEO);
+				User ceoUser = defaultUser(Role.ROLE_CEO);
 
 				Store expectedStore = requestDto.toEntity(ceoUser);
 
@@ -107,7 +107,7 @@ class StoreServiceTest {
 			@DisplayName("NOT_CEO 예외를 던진다")
 			void it_throws_not_ceo_exception() {
 				// Given
-				User nonCeoUser = defaultUser(Role.USER);
+				User nonCeoUser = defaultUser(Role.ROLE_USER);
 
 				when(userRepository.findByOwnerIdOrThrow(1L)).thenReturn(nonCeoUser);
 
@@ -126,7 +126,7 @@ class StoreServiceTest {
 			@DisplayName("TOO_MANY_STORE 예외를 던진다")
 			void it_throws_too_many_store_exception() {
 				// Given
-				User ceoUser = defaultUser(Role.CEO);
+				User ceoUser = defaultUser(Role.ROLE_CEO);
 
 				when(userRepository.findByOwnerIdOrThrow(1L)).thenReturn(ceoUser);
 				when(storeRepository.countByOwner(ceoUser)).thenReturn(3L); // 최대 개수 이상
@@ -167,7 +167,7 @@ class StoreServiceTest {
 			@DisplayName("가게 정보를 업데이트하고 반환한다")
 			void it_updates_and_returns_store() {
 				// Given
-				User ceoUser = defaultUser(Role.CEO);
+				User ceoUser = defaultUser(Role.ROLE_CEO);
 				Store store = StoreFixture.storeFrom(storeId, ceoUser);
 
 				when(storeRepository.findByIdOrElseThrow(storeId)).thenReturn(store);
@@ -216,7 +216,7 @@ class StoreServiceTest {
 			@DisplayName("NOT_CEO 예외를 던진다")
 			void it_throws_not_ceo_exception() {
 				// Given
-				User nonCeoUser = defaultUser(Role.USER);
+				User nonCeoUser = defaultUser(Role.ROLE_USER);
 				Store store = mock(Store.class);
 
 				when(storeRepository.findByIdOrElseThrow(storeId)).thenReturn(store);
@@ -237,7 +237,7 @@ class StoreServiceTest {
 			@DisplayName("NOT_STORE_OWNER 예외를 던진다")
 			void it_throws_not_store_owner_exception() {
 				// Given
-				User ceoUser = defaultUser(Role.CEO);
+				User ceoUser = defaultUser(Role.ROLE_CEO);
 				Store store = mock(Store.class);
 
 				when(storeRepository.findByIdOrElseThrow(storeId)).thenReturn(store);
@@ -267,7 +267,7 @@ class StoreServiceTest {
 			@DisplayName("메뉴 정보를 포함한 가게 정보를 반환한다")
 			void it_returns_store_with_menus() {
 				// Given
-				User ceoUser = defaultUser(Role.CEO);
+				User ceoUser = defaultUser(Role.ROLE_CEO);
 				Store store = StoreFixture.storeFrom(storeId, ceoUser);
 
 				when(storeRepository.findStoreWithMenusByIdOrElseThrow(storeId)).thenReturn(store);
@@ -317,7 +317,7 @@ class StoreServiceTest {
 			@DisplayName("가게를 삭제한다")
 			void it_deletes_store() {
 				// Given
-				User owner = defaultUser(Role.CEO);
+				User owner = defaultUser(Role.ROLE_CEO);
 				Store store = StoreFixture.storeFrom(storeId, owner);
 
 				when(storeRepository.findByIdOrElseThrow(storeId)).thenReturn(store);
@@ -357,7 +357,7 @@ class StoreServiceTest {
 			@DisplayName("NOT_CEO 예외를 던진다")
 			void it_throws_not_ceo_exception() {
 				// Given
-				User nonCeoUser = defaultUser(Role.USER);
+				User nonCeoUser = defaultUser(Role.ROLE_USER);
 				Store store = mock(Store.class);
 
 				when(storeRepository.findByIdOrElseThrow(storeId)).thenReturn(store);
@@ -378,7 +378,7 @@ class StoreServiceTest {
 			@DisplayName("NOT_STORE_OWNER 예외를 던진다")
 			void it_throws_not_store_owner_exception() {
 				// Given
-				User ceoUser = defaultUser(Role.CEO);
+				User ceoUser = defaultUser(Role.ROLE_CEO);
 				Store store = mock(Store.class);
 
 				when(storeRepository.findByIdOrElseThrow(storeId)).thenReturn(store);
