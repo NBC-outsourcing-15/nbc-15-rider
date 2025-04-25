@@ -1,7 +1,6 @@
 package rider.nbc.domain.store.dto;
 
-import java.time.LocalTime;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -14,37 +13,41 @@ import rider.nbc.domain.store.entity.StoreAddress;
 import rider.nbc.domain.store.entity.StoreStatus;
 import rider.nbc.domain.user.entity.User;
 
+import java.time.LocalTime;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class StoreCreateRequestDto {
-    
+
     @NotBlank(message = "가게 이름은 필수입니다.")
     private String name;
-    
+
     @NotBlank(message = "카테고리는 필수입니다.")
     private String category;
-    
+
     @NotBlank(message = "시/도는 필수입니다.")
     private String city;
-    
+
     @NotBlank(message = "구/군은 필수입니다.")
     private String district;
-    
+
     @NotBlank(message = "상세주소는 필수입니다.")
     private String detailedAddress;
-    
+
     private String storePictureUrl;
-    
+
     private String introduce;
-    
+
     @NotNull(message = "오픈 시간은 필수입니다.")
+    @Schema(type = "string", example = "09:00:00")
     private LocalTime openTime;
-    
+
     @NotNull(message = "마감 시간은 필수입니다.")
+    @Schema(type = "string", example = "09:00:00")
     private LocalTime closeTime;
-    
+
     public Store toEntity(User owner) {
         return Store.builder()
                 .name(name)

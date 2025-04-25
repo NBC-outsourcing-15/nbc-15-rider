@@ -53,7 +53,6 @@ public class SecurityConfig {
 
                 // 요청별 권한 설정
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/stores/**").hasRole("CEO")
                         .requestMatchers(HttpMethod.POST, "/api/v1/stores/**").hasRole("CEO") // 가게생성
                         .requestMatchers(HttpMethod.PUT, "/api/v1/stores/**").hasRole("CEO") // 가게수정
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/stores/**").hasRole("CEO") // 가게삭제

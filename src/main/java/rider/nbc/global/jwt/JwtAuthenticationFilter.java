@@ -37,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Role role = jwtTokenProvider.getRole(token);
 
                 AuthUser authUser = new AuthUser(userId, email,nickname , role);
-                GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
+                GrantedAuthority authority = new SimpleGrantedAuthority(role.name());
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(authUser, null, List.of(authority));

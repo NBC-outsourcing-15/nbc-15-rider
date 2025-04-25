@@ -10,14 +10,18 @@ import rider.nbc.domain.user.exception.UserException;
 import rider.nbc.domain.user.exception.UserExceptionCode;
 import rider.nbc.domain.store.exception.StoreException;
 import rider.nbc.domain.store.exception.StoreExceptionCode;
-import rider.nbc.domain.user.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    Optional<User> findById(Long userId);
 
     Optional<User> findByEmail(String email);
 
     Optional<User> findBySocialIdAndSocialType(String socialId, SocialType socialType);
 
+    default User findByIdOrElseThrow(Long userId) {
+        return findById(userId).orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
+    }
 
     default User findByEmailOrThrow(String email) {
         return findByEmail(email).orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));

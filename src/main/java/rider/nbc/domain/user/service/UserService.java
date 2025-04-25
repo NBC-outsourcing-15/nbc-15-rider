@@ -5,9 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import rider.nbc.domain.user.dto.LoginRequestDto;
-import rider.nbc.domain.user.dto.ReissueRequestDto;
-import rider.nbc.domain.user.dto.SignupRequestDto;
+import rider.nbc.domain.user.dto.*;
 import rider.nbc.domain.user.entity.Role;
 import rider.nbc.domain.user.entity.User;
 import rider.nbc.domain.user.entity.UserStatus;
@@ -50,7 +48,7 @@ public class UserService {
         user.validateIsActive(); // soft delete 확인
         user.validatePassword(dto.getPassword(), passwordEncoder);
 
-        TokenResponseDto token = jwtTokenProvider.generateTokenPair(user.getId(), user.getEmail(),user.getNickname(), user.getRole());
+        TokenResponseDto token = jwtTokenProvider.generateTokenPair(user.getId(), user.getEmail(), user.getNickname(), user.getRole());
 
         // Redis에 RefreshToken 저장
         refreshTokenService.save(user.getId(), token.getRefreshToken(), jwtTokenProvider.getRefreshTokenDuration());
@@ -101,4 +99,36 @@ public class UserService {
         logout(userId);
     }
 
+    public UserResponseDto getUser(Long userId) {
+        User user = userRepository.findByIdOrElseThrow(userId);
+
+        return UserResponseDto.builder()
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .phone(user.getPhone())
+                .role(user.getRole())
+                .socialType(user.getSocialType())
+                .build();
+    }
+
+    @Transactional
+    public UpdateUserResponseDto updateUser(Long userId, UpdateUserRequestDto dto) {
+        User user = userRepository.findByIdOrElseThrow(userId);
+        user.checkEmailDuplicate(userRepository, dto.getEmail());
+
+        user.updateUserInfo(dto.getEmail(), dto.getNickname(), dto.getPhone());
+
+        return UpdateUserResponseDto.builder()
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .phone(user.getPhone())
+                .build();
+    }
+
+    @Transactional
+    public void updatePassword(Long userId, UpdatePasswordRequestDto request) {
+        User user = userRepository.findActiveByIdOrThrow(userId);
+        user.validatePassword(request.getCurrentPassword(), passwordEncoder); // 현재 비밀번호 확인
+        user.changePassword(request.getNewPassword(), passwordEncoder); // 새 비밀번호 설정
+    }
 }
