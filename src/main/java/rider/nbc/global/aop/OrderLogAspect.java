@@ -1,11 +1,9 @@
 package rider.nbc.global.aop;
 
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 import rider.nbc.domain.order.dto.responseDto.OrderResponseDto;
 import rider.nbc.domain.order.dto.responseDto.OrderStatusResponseDto;

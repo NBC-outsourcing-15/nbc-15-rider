@@ -8,9 +8,14 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import rider.nbc.domain.order.dto.requestDto.OrderStatusRequestDto;
 import rider.nbc.domain.order.dto.responseDto.OrderResponseDto;
+import rider.nbc.domain.order.dto.responseDto.OrderStatusResponseDto;
 import rider.nbc.domain.order.service.OrderService;
 import rider.nbc.global.auth.AuthUser;
 import rider.nbc.global.response.CommonResponse;
+import rider.nbc.global.response.CommonResponses;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author : kimjungmin
@@ -49,18 +54,18 @@ public class OrderController {
      * @return 성공 메시지
      */
     @PatchMapping("/{orderId}")
-    public ResponseEntity<CommonResponse<String>> patchOrderStatus(
+    public ResponseEntity<CommonResponse<OrderStatusResponseDto>> patchOrderStatus(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long orderId,
             @Valid@RequestBody OrderStatusRequestDto statusRequestDto
     ) {
-        String result = orderService.patchOrderStatus(authUser, orderId, statusRequestDto);
+        OrderStatusResponseDto result = orderService.patchOrderStatus(authUser, orderId, statusRequestDto);
         return ResponseEntity.ok(CommonResponse.of(true, HttpStatus.OK.value()
-                , "주문이" + result + "으로 변경되었습니다."));
+                , "주문 상태 변경", result));
     }
 
     /**
-     * [Controller] 주문 조회
+     * [Controller] 주문 단건 조회
      *
      * @param authUser 로그인한 유저 Id
      * @return 그 유저가 담은 장바구니로 만든 주문내역
@@ -74,6 +79,26 @@ public class OrderController {
                 .body(CommonResponse.of(true,
                         HttpStatus.CREATED.value(),
                         "주문 조회 완료",
-                        orderService.getOrder(authUser.getId(),orderId)));
+                        orderService.getOrder(authUser,orderId)));
+    }
+
+    /**
+     * [Controller] 주문 디건 조회
+     *
+     * @param authUser 로그인한 유저 Id
+     * @return 그 유저가 담은 장바구니로 만든 주문내역
+     */
+    @GetMapping
+    public ResponseEntity<CommonResponses<List<OrderResponseDto>>> getAllOrders(
+            @AuthenticationPrincipal AuthUser authUser
+    ) {
+        List<OrderResponseDto> orders = orderService.getAllOrders(authUser);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponses.of(
+                        true,
+                        HttpStatus.CREATED.value(),
+                        "주문 조회 완료",
+                        Collections.singletonList(orders)));
     }
 }

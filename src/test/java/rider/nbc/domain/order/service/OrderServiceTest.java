@@ -13,6 +13,7 @@ import rider.nbc.domain.cart.repository.CartRedisRepository;
 import rider.nbc.domain.cart.vo.MenuItem;
 import rider.nbc.domain.order.dto.requestDto.OrderStatusRequestDto;
 import rider.nbc.domain.order.dto.responseDto.OrderResponseDto;
+import rider.nbc.domain.order.dto.responseDto.OrderStatusResponseDto;
 import rider.nbc.domain.order.entity.Order;
 import rider.nbc.domain.order.enums.OrderStatus;
 import rider.nbc.domain.order.exception.OrderException;
@@ -233,10 +234,10 @@ class OrderServiceTest {
         OrderStatusRequestDto dto = new OrderStatusRequestDto("ACCEPTED");
 
         // when
-        String result = orderService.patchOrderStatus(authUser, 1L, dto);
+        OrderStatusResponseDto result = orderService.patchOrderStatus(authUser, 1L, dto);
 
         // then
-        assertEquals("조리중", result);
+        assertEquals(OrderStatus.ACCEPTED, result.getOrderStatus());
         assertEquals(OrderStatus.ACCEPTED, order.getOrderStatus());
     }
 
