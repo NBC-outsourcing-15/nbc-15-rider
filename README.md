@@ -99,3 +99,281 @@
 | 정석현 | [@sukh115](https://github.com/sukh115)         | 회원 / 인증기능 (소셜 로그인), 알림 기능|
 | 권새롬 | [@Ksr-ccb](https://github.com/Ksr-ccb)         | 장바구니, 결제 기능   |
 | 이승현 | [@SeungHyunLee054](https://github.com/SeungHyunLee054) | 포인트 충전( 토스 API), 리뷰 기능  |
+
+
+---
+
+## 📦 패키지 구조
+```
++---java
+|   \---rider
+|       \---nbc
+|           |   Nbc15Application.java
+|           |
+|           +---domain
+|           |   +---cart
+|           |   |   +---controller
+|           |   |   |       CartController.java
+|           |   |   |
+|           |   |   +---dto
+|           |   |   |   +---request
+|           |   |   |   |       CartAddRequestDto.java
+|           |   |   |   |       CartUpdateRequestDto.java
+|           |   |   |   |
+|           |   |   |   \---response
+|           |   |   |           CartItemResponseDto.java
+|           |   |   |           CartListResponseDto.java
+|           |   |   |
+|           |   |   +---exception
+|           |   |   |       CartException.java
+|           |   |   |       CartExceptionCode.java
+|           |   |   |
+|           |   |   +---repository
+|           |   |   |       CartRedisRepository.java
+|           |   |   |
+|           |   |   +---service
+|           |   |   |       CartService.java
+|           |   |   |
+|           |   |   \---vo
+|           |   |           Cart.java
+|           |   |           MenuItem.java
+|           |   |
+|           |   +---menu
+|           |   |   +---controller
+|           |   |   |       MenuController.java
+|           |   |   |
+|           |   |   +---dto
+|           |   |   |       MenuCreateRequestDto.java
+|           |   |   |       MenuResponseDto.java
+|           |   |   |       MenuUpdateRequestDto.java
+|           |   |   |
+|           |   |   +---entity
+|           |   |   |       Menu.java
+|           |   |   |
+|           |   |   +---exception
+|           |   |   |       MenuException.java
+|           |   |   |       MenuExceptionCode.java
+|           |   |   |
+|           |   |   +---repository
+|           |   |   |       MenuRepository.java
+|           |   |   |
+|           |   |   \---service
+|           |   |           MenuService.java
+|           |   |
+|           |   +---order
+|           |   |   +---controller
+|           |   |   |       OrderController.java
+|           |   |   |
+|           |   |   +---dto
+|           |   |   |   +---requestDto
+|           |   |   |   |       OrderStatusRequestDto.java
+|           |   |   |   |
+|           |   |   |   \---responseDto
+|           |   |   |           OrderResponseDto.java
+|           |   |   |           OrderStatusResponseDto.java
+|           |   |   |
+|           |   |   +---entity
+|           |   |   |       Order.java
+|           |   |   |
+|           |   |   +---enums
+|           |   |   |       OrderStatus.java
+|           |   |   |
+|           |   |   +---exception
+|           |   |   |       OrderException.java
+|           |   |   |       OrderExceptionCode.java
+|           |   |   |
+|           |   |   +---repository
+|           |   |   |       OrderRepository.java
+|           |   |   |
+|           |   |   +---service
+|           |   |   |       OrderService.java
+|           |   |   |
+|           |   |   \---vo
+|           |   |           OrderMenu.java
+|           |   |
+|           |   +---payment
+|           |   |   +---constant
+|           |   |   |       PaymentConstants.java
+|           |   |   |
+|           |   |   +---controller
+|           |   |   |       PaymentController.java
+|           |   |   |
+|           |   |   +---dto
+|           |   |   |   +---request
+|           |   |   |   |       PaymentCancelRequest.java
+|           |   |   |   |       PaymentRequest.java
+|           |   |   |   |
+|           |   |   |   \---response
+|           |   |   |           PaymentFailResponse.java
+|           |   |   |           PaymentResponse.java
+|           |   |   |
+|           |   |   +---entity
+|           |   |   |       Payment.java
+|           |   |   |
+|           |   |   +---enums
+|           |   |   |       OrderNameType.java
+|           |   |   |       PayType.java
+|           |   |   |
+|           |   |   +---exception
+|           |   |   |   |   PaymentException.java
+|           |   |   |   |
+|           |   |   |   \---code
+|           |   |   |           PaymentExceptionCode.java
+|           |   |   |
+|           |   |   +---repository
+|           |   |   |       PaymentRepository.java
+|           |   |   |
+|           |   |   \---service
+|           |   |           PaymentService.java
+|           |   |
+|           |   +---review
+|           |   |   +---controller
+|           |   |   |       StoreReviewController.java
+|           |   |   |
+|           |   |   +---dto
+|           |   |   |   +---request
+|           |   |   |   |       StoreReviewCreateRequest.java
+|           |   |   |   |       StoreReviewUpdateRequest.java
+|           |   |   |   |
+|           |   |   |   \---response
+|           |   |   |           StoreReviewResponse.java
+|           |   |   |
+|           |   |   +---entity
+|           |   |   |       StoreReview.java
+|           |   |   |
+|           |   |   +---exception
+|           |   |   |   |   StoreReviewException.java
+|           |   |   |   |
+|           |   |   |   \---code
+|           |   |   |           StoreReviewExceptionCode.java
+|           |   |   |
+|           |   |   +---repository
+|           |   |   |       StoreReviewRepository.java
+|           |   |   |
+|           |   |   +---service
+|           |   |   |       StoreReviewService.java
+|           |   |   |
+|           |   |   \---vo
+|           |   |           MenuReview.java
+|           |   |
+|           |   +---store
+|           |   |   +---constant
+|           |   |   |       StoreConstants.java
+|           |   |   |
+|           |   |   +---controller
+|           |   |   |       StoreController.java
+|           |   |   |
+|           |   |   +---dto
+|           |   |   |       StoreCreateRequestDto.java
+|           |   |   |       StoreDetailResponseDto.java
+|           |   |   |       StoreResponseDto.java
+|           |   |   |       StoreReviewsResponseDto.java
+|           |   |   |       StoreUpdateRequestDto.java
+|           |   |   |
+|           |   |   +---entity
+|           |   |   |       OperatingHours.java
+|           |   |   |       Store.java
+|           |   |   |       StoreAddress.java
+|           |   |   |       StoreStatus.java
+|           |   |   |
+|           |   |   +---exception
+|           |   |   |       StoreException.java
+|           |   |   |       StoreExceptionCode.java
+|           |   |   |
+|           |   |   +---repository
+|           |   |   |       StoreRepository.java
+|           |   |   |
+|           |   |   \---service
+|           |   |           StoreService.java
+|           |   |
+|           |   \---user
+|           |       +---controller
+|           |       |       UserController.java
+|           |       |
+|           |       +---dto
+|           |       |       KakaoUserInfoResponse.java
+|           |       |       LoginRequestDto.java
+|           |       |       NaverUserInfoResponse.java
+|           |       |       ReissueRequestDto.java
+|           |       |       SignupRequestDto.java
+|           |       |       UpdatePasswordRequestDto.java
+|           |       |       UpdateUserRequestDto.java
+|           |       |       UpdateUserResponseDto.java
+|           |       |       UserResponseDto.java
+|           |       |       WithdrawRequestDto.java
+|           |       |
+|           |       +---entity
+|           |       |       Role.java
+|           |       |       SocialType.java
+|           |       |       User.java
+|           |       |       UserStatus.java
+|           |       |
+|           |       +---exception
+|           |       |       UserException.java
+|           |       |       UserExceptionCode.java
+|           |       |
+|           |       +---repository
+|           |       |       UserRepository.java
+|           |       |
+|           |       \---service
+|           |               CustomOAuth2UserService.java
+|           |               UserService.java
+|           |
+|           \---global
+|               +---aop
+|               |       OrderLogAspect.java
+|               |
+|               +---auth
+|               |       AuthUser.java
+|               |
+|               +---config
+|               |       JpaConfig.java
+|               |       RedisConfig.java
+|               |       RestTemplateConfig.java
+|               |       SecurityConfig.java
+|               |       SwaggerConfig.java
+|               |       TimeBaseEntity.java
+|               |
+|               +---exception
+|               |   |   BaseException.java
+|               |   |
+|               |   +---dto
+|               |   |       ValidationError.java
+|               |   |
+|               |   \---handler
+|               |           GlobalExceptionHandler.java
+|               |
+|               +---handler
+|               |       OAuth2LoginSuccessHandler.java
+|               |
+|               +---jwt
+|               |   |   JwtAuthenticationEntryPoint.java
+|               |   |   JwtAuthenticationFilter.java
+|               |   |   JwtTokenProvider.java
+|               |   |
+|               |   +---dto
+|               |   |       TokenResponseDto.java
+|               |   |
+|               |   +---jwtException
+|               |   |       JwtAuthenticationException.java
+|               |   |       JwtErrorResponse.java
+|               |   |       JwtExceptionCode.java
+|               |   |
+|               |   \---service
+|               |           RefreshTokenService.java
+|               |
+|               +---response
+|               |       CommonResponse.java
+|               |       CommonResponses.java
+|               |
+|               \---util
+|                       LogUtils.java
+|
+\---resources
+    |   application-local.yml
+    |   application.yml
+    |
+    \---static
+            toss.html
+
+```
