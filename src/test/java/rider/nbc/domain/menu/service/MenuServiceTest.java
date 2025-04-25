@@ -67,7 +67,7 @@ class MenuServiceTest {
 			@DisplayName("메뉴를 생성하고 반환한다")
 			void it_creates_and_returns_menu() {
 				// Given
-				User owner = defaultUser(Role.CEO);
+				User owner = defaultUser(Role.ROLE_CEO);
 				Store store = StoreFixture.storeFrom(storeId, owner);
 				Menu expectedMenu = requestDto.toEntity(store);
 
@@ -93,7 +93,7 @@ class MenuServiceTest {
 			@DisplayName("STORE_NOT_FOUND 예외를 던진다")
 			void it_throws_store_not_found_exception() {
 				// Given
-				User owner = defaultUser(Role.CEO);
+				User owner = defaultUser(Role.ROLE_CEO);
 				when(userRepository.findByOwnerIdOrThrow(anyLong())).thenReturn(owner);
 				when(storeRepository.findByIdOrElseThrow(storeId))
 					.thenThrow(new StoreException(StoreExceptionCode.NOT_FOUND_STORE));
@@ -113,8 +113,8 @@ class MenuServiceTest {
 			@DisplayName("NOT_STORE_OWNER 예외를 던진다")
 			void it_throws_not_store_owner_exception() {
 				// Given
-				User owner = defaultUser(Role.CEO);
-				User nonOwner = OwnerFixture.UserFrom(owner.getId() + 1, Role.USER);
+				User owner = defaultUser(Role.ROLE_CEO);
+				User nonOwner = OwnerFixture.UserFrom(owner.getId() + 1, Role.ROLE_USER);
 				Store store = StoreFixture.storeFrom(storeId, owner);
 
 				when(userRepository.findByOwnerIdOrThrow(anyLong())).thenReturn(nonOwner);
@@ -151,7 +151,7 @@ class MenuServiceTest {
 			@DisplayName("메뉴를 수정하고 반환한다")
 			void it_updates_and_returns_menu() {
 				// Given
-				User owner = defaultUser(Role.CEO);
+				User owner = defaultUser(Role.ROLE_CEO);
 				Store store = StoreFixture.storeFrom(storeId, owner);
 				Menu menu = MenuFixture.menuFrom(menuId, store);
 
@@ -180,7 +180,7 @@ class MenuServiceTest {
 			@DisplayName("STORE_NOT_FOUND 예외를 던진다")
 			void it_throws_store_not_found_exception() {
 				// Given
-				User owner = defaultUser(Role.CEO);
+				User owner = defaultUser(Role.ROLE_CEO);
 				when(userRepository.findByOwnerIdOrThrow(anyLong())).thenReturn(owner);
 				when(storeRepository.findStoreWithMenusByIdOrElseThrow(storeId))
 					.thenThrow(new StoreException(StoreExceptionCode.NOT_FOUND_STORE));
@@ -200,8 +200,8 @@ class MenuServiceTest {
 			@DisplayName("NOT_STORE_OWNER 예외를 던진다")
 			void it_throws_not_store_owner_exception() {
 				// Given
-				User owner = defaultUser(Role.CEO);
-				User nonOwner = OwnerFixture.UserFrom(owner.getId() + 1, Role.USER);
+				User owner = defaultUser(Role.ROLE_CEO);
+				User nonOwner = OwnerFixture.UserFrom(owner.getId() + 1, Role.ROLE_USER);
 				Store store = StoreFixture.storeFrom(storeId, owner);
 
 				when(userRepository.findByOwnerIdOrThrow(anyLong())).thenReturn(nonOwner);
@@ -222,7 +222,7 @@ class MenuServiceTest {
 			@DisplayName("MENU_NOT_FOUND 예외를 던진다")
 			void it_throws_menu_not_found_exception() {
 				// Given
-				User owner = defaultUser(Role.CEO);
+				User owner = defaultUser(Role.ROLE_USER);
 				Store store = StoreFixture.storeFrom(storeId, owner);
 
 				when(userRepository.findByOwnerIdOrThrow(anyLong())).thenReturn(owner);
@@ -245,7 +245,7 @@ class MenuServiceTest {
 			@DisplayName("MENU_NOT_FOUND 예외를 던진다")
 			void it_throws_menu_not_found_exception() {
 				// Given
-				User owner = defaultUser(Role.CEO);
+				User owner = defaultUser(Role.ROLE_CEO);
 				Store store = StoreFixture.storeFrom(storeId, owner);
 				Menu menu = MenuFixture.defaultMenu(menuId);
 
@@ -278,7 +278,7 @@ class MenuServiceTest {
 			@DisplayName("메뉴를 삭제한다")
 			void it_deletes_menu() {
 				// Given
-				User owner = defaultUser(Role.CEO);
+				User owner = defaultUser(Role.ROLE_CEO);
 				Store store = StoreFixture.storeFrom(storeId, owner);
 				Menu menu = MenuFixture.menuFrom(menuId, store);
 
@@ -302,7 +302,7 @@ class MenuServiceTest {
 			@DisplayName("STORE_NOT_FOUND 예외를 던진다")
 			void it_throws_store_not_found_exception() {
 				// Given
-				User owner = defaultUser(Role.CEO);
+				User owner = defaultUser(Role.ROLE_CEO);
 				when(userRepository.findByOwnerIdOrThrow(anyLong())).thenReturn(owner);
 				when(storeRepository.findStoreWithMenusByIdOrElseThrow(storeId))
 					.thenThrow(new StoreException(StoreExceptionCode.NOT_FOUND_STORE));
@@ -322,8 +322,8 @@ class MenuServiceTest {
 			@DisplayName("NOT_STORE_OWNER 예외를 던진다")
 			void it_throws_not_store_owner_exception() {
 				// Given
-				User owner = defaultUser(Role.CEO);
-				User nonOwner = OwnerFixture.UserFrom(owner.getId() + 1, Role.USER);
+				User owner = defaultUser(Role.ROLE_CEO);
+				User nonOwner = OwnerFixture.UserFrom(owner.getId() + 1, Role.ROLE_USER);
 				Store store = StoreFixture.storeFrom(storeId, owner);
 
 				when(userRepository.findByOwnerIdOrThrow(anyLong())).thenReturn(nonOwner);
@@ -344,7 +344,7 @@ class MenuServiceTest {
 			@DisplayName("MENU_NOT_FOUND 예외를 던진다")
 			void it_throws_menu_not_found_exception() {
 				// Given
-				User owner = defaultUser(Role.CEO);
+				User owner = defaultUser(Role.ROLE_CEO);
 				Store store = StoreFixture.storeFrom(storeId, owner);
 
 				when(userRepository.findByOwnerIdOrThrow(anyLong())).thenReturn(owner);
@@ -367,7 +367,7 @@ class MenuServiceTest {
 			@DisplayName("NOT_CONTAINS_MENU 예외를 던진다")
 			void it_throws_not_contains_menu_exception() {
 				// Given
-				User owner = defaultUser(Role.CEO);
+				User owner = defaultUser(Role.ROLE_CEO);
 				Store store = StoreFixture.storeFrom(storeId, owner);
 				Menu menu = MenuFixture.defaultMenu(menuId);
 
