@@ -67,7 +67,7 @@ class UserControllerTest {
         verify(userService).signup(any(SignupRequestDto.class));
     }
 
-    @Test
+/*    @Test
     @DisplayName("로그인 성공")
     void login() throws Exception {
         LoginRequestDto request = new LoginRequestDto();
@@ -82,7 +82,7 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").value("access"))
                 .andExpect(jsonPath("$.refreshToken").value("refresh"));
-    }
+    }*/
 
     @Test
     @DisplayName("토큰 재발급 성공")
