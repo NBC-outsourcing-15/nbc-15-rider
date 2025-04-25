@@ -1,6 +1,8 @@
 package rider.nbc.domain.store.repository;
 
 import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,6 +11,7 @@ import rider.nbc.domain.store.exception.StoreException;
 import rider.nbc.domain.store.exception.StoreExceptionCode;
 import rider.nbc.domain.user.entity.User;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -42,4 +45,21 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     default Store findByIdOrElseThrow(Long storeId) {
         return findById(storeId).orElseThrow(() -> new StoreException(StoreExceptionCode.NOT_FOUND_STORE));
     }
+
+    /**
+     * 카테고리별로 가게 목록을 조회 (카테고리가 null이면 모든 가게 조회)
+     *
+     * @param category 카테고리 (optional)
+     * @param pageable 페이징 정보
+     * @return 가게 목록
+     */
+    Page<Store> findByCategoryIgnoreCase(String category, Pageable pageable);
+
+    /**
+     * 모든 가게 목록을 조회
+     *
+     * @param pageable 페이징 정보
+     * @return 가게 목록
+     */
+    Page<Store> findAll(Pageable pageable);
 }

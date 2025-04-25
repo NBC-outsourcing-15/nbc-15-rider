@@ -5,6 +5,8 @@ import static rider.nbc.domain.store.constant.StoreConstants.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -168,5 +170,35 @@ public class StoreService {
 			.collect(Collectors.toList());
 
 		return PageResponseDto.of(content, totalElements, page, size);
+	}
+
+	/**
+	 * 가게 목록 조회 (카테고리 선택적 필터링)
+	 *
+	 * @param category 카테고리 (optional)
+	 * @param page 페이지 번호 (0부터 시작)
+	 * @param size 페이지 크기
+	 * @return 가게 목록과 페이지 정보
+	 */
+	@Transactional(readOnly = true)
+	public PageResponseDto<StoreSearchResponseDto> getStores(String category, Pageable pageable) {
+		Page<Store> storePage;
+
+		if (category != null && !category.isEmpty()) {
+			storePage = storeRepository.findByCategoryIgnoreCase(category, pageable);
+		} else {
+			storePage = storeRepository.findAll(pageable);
+		}
+
+		List<StoreSearchResponseDto> content = storePage.getContent().stream()
+			.map(StoreSearchResponseDto::fromEntity)
+			.collect(Collectors.toList());
+
+		return PageResponseDto.of(
+			content,
+			storePage.getTotalElements(),
+			pageable.getPageNumber(),
+			pageable.getPageSize()
+		);
 	}
 }
