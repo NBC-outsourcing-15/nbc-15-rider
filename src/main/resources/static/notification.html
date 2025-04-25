@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>SSE 알림 테스트</title>
+</head>
+<body>
+<h1>🔔 실시간 알림 테스트 (SSE)</h1>
+<div id="notification-box">
+    <p>알림 대기 중...</p>
+</div>
+
+<script>
+    const eventSource = new EventSource("http://localhost:8080/api/v1/notification/subscribe");
+
+    const box = document.getElementById("notification-box");
+
+    eventSource.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        const msgElement = document.createElement("p");
+        msgElement.innerText = `[${data.status}] ${data.message} (주문번호: ${data.orderId})`;
+        box.appendChild(msgElement);
+    };
+
+    eventSource.onerror = function(event) {
+        const err = document.createElement("p");
+        err.style.color = 'red';
+        err.innerText = 'SSE 연결 실패 또는 종료됨';
+        box.appendChild(err);
+        eventSource.close();
+    };
+</script>
+</body>
+</html>

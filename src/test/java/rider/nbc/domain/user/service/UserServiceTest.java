@@ -16,6 +16,7 @@ import rider.nbc.domain.user.repository.UserRepository;
 import rider.nbc.global.jwt.JwtTokenProvider;
 import rider.nbc.global.jwt.dto.TokenResponseDto;
 import rider.nbc.global.jwt.service.RefreshTokenService;
+import rider.nbc.global.jwt.service.TokenService;
 
 import java.time.Duration;
 
@@ -29,6 +30,7 @@ class UserServiceTest {
     private PasswordEncoder passwordEncoder;
     private JwtTokenProvider jwtTokenProvider;
     private RefreshTokenService refreshTokenService;
+    private TokenService tokenService;
 
     @BeforeEach
     void setUp() {
@@ -76,16 +78,21 @@ class UserServiceTest {
 
         when(userRepository.findByEmailOrThrow(dto.getEmail())).thenReturn(user);
         when(passwordEncoder.matches(dto.getPassword(), user.getPassword())).thenReturn(true);
-        when(jwtTokenProvider.generateTokenPair(any(), any(), any(), any()))
-                .thenReturn(new TokenResponseDto("access-token", "refresh-token"));
+        when(jwtTokenProvider.generateAccessToken(any(), any(), any(), any()))
+                .thenReturn("access-token");
+        when(jwtTokenProvider.generateRefreshToken(any(), any(), any(), any()))
+                .thenReturn("refresh-token");
         when(jwtTokenProvider.getRefreshTokenDuration()).thenReturn(Duration.ofDays(7));
 
-        TokenResponseDto token = userService.login(dto);
+        User loggedInUser = userService.login(dto);
+        TokenResponseDto token = tokenService.generateAndSaveTokenPair(loggedInUser);
 
         assertEquals("access-token", token.getAccessToken());
         assertEquals("refresh-token", token.getRefreshToken());
+
         verify(refreshTokenService).save(eq(user.getId()), eq("refresh-token"), any());
     }
+
 
     @Test
     void reissue_성공시_새로운_토큰발급() {

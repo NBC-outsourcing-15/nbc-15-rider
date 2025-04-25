@@ -6,6 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import rider.nbc.domain.cart.exception.CartException;
 import rider.nbc.domain.cart.exception.CartExceptionCode;
 import rider.nbc.domain.cart.repository.CartRedisRepository;
+import rider.nbc.domain.cart.vo.MenuItem;
+import rider.nbc.domain.notification.service.NotificationService;
 import rider.nbc.domain.cart.vo.Cart;
 import rider.nbc.domain.order.dto.requestDto.OrderStatusRequestDto;
 import rider.nbc.domain.order.dto.responseDto.OrderResponseDto;
@@ -40,6 +42,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CartRedisRepository cartRedisRepository;
     private final StoreRepository storeRepository;
+    private final NotificationService notificationService;
 
 
     @Transactional
@@ -124,7 +127,14 @@ public class OrderService {
         // 대기->준비중->완료 단계별로만 움직일 수 있음.
         checkCanChangeStatus(order.getOrderStatus(), orderStatus);
 
+        // 상태 변경 감지하면 알림 발송
         order.updateStatus(orderStatus);
+        notificationService.sendOrderStatusNotification(
+                authUser.getId(), // 주문 작성자 ID
+                orderId,
+                orderStatus // OrderStatus enum
+        );
+
 
         return OrderStatusResponseDto.builder()
                 .orderId(orderId)

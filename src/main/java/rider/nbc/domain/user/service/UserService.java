@@ -43,7 +43,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public TokenResponseDto login(LoginRequestDto dto) {
+    public User  login(LoginRequestDto dto) {
         User user = userRepository.findByEmailOrThrow(dto.getEmail());
         user.validateIsActive(); // soft delete 확인
         user.validatePassword(dto.getPassword(), passwordEncoder);
@@ -53,7 +53,7 @@ public class UserService {
         // Redis에 RefreshToken 저장
         refreshTokenService.save(user.getId(), token.getRefreshToken(), jwtTokenProvider.getRefreshTokenDuration());
 
-        return token;
+        return user;
     }
 
     public TokenResponseDto reissue(ReissueRequestDto dto) {
