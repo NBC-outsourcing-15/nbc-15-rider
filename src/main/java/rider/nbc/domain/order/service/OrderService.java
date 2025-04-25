@@ -7,7 +7,6 @@ import rider.nbc.domain.cart.exception.CartException;
 import rider.nbc.domain.cart.exception.CartExceptionCode;
 import rider.nbc.domain.cart.repository.CartRedisRepository;
 import rider.nbc.domain.cart.vo.Cart;
-import rider.nbc.domain.cart.vo.MenuItem;
 import rider.nbc.domain.order.dto.requestDto.OrderStatusRequestDto;
 import rider.nbc.domain.order.dto.responseDto.OrderResponseDto;
 import rider.nbc.domain.order.dto.responseDto.OrderStatusResponseDto;
@@ -63,7 +62,7 @@ public class OrderService {
 
         // 최소주문금액
         Long totalPrice = cart.getMenus().stream()
-                .mapToLong(MenuItem::getPrice)
+                .mapToLong(mi -> mi.getPrice() * mi.getQuantity())
                 .sum();
         // 쿠폰적용 계산?
         checkPaymentAvailable(totalPrice, store.getMinDeliveryPrice(), authUser.getPoint()); //결제 ㄱㄴ?
@@ -108,7 +107,7 @@ public class OrderService {
 
     @Transactional
     public OrderStatusResponseDto patchOrderStatus(AuthUser authUser, Long orderId, OrderStatusRequestDto statusRequestDto) {
-        if (!authUser.getRole().equals(Role.CEO)) {
+        if (authUser.getRole() != Role.CEO) {
             throw new OrderException(OrderExceptionCode.NOT_OWNER);
         }
         //orderId의 가게를 받아옴
@@ -166,12 +165,10 @@ public class OrderService {
             // 내 주문 이력 조회
             orders = orderRepository.findAllByUserId(authUser.getId());
 
-        } else if (authUser.getRole() == Role.CEO) {
-            // 내 가게들의 주문 목록 조회
+        } else {
+            // 내 가게들의 주문 목록 조회 (사장)
             orders = orderRepository.findAllByStoreOwnerId(authUser.getId());
 
-        } else {
-            throw new OrderException(OrderExceptionCode.NO_PERMISSION);
         }
 
         return orders.stream()

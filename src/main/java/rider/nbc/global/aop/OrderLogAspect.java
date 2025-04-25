@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import rider.nbc.domain.order.dto.responseDto.OrderResponseDto;
 import rider.nbc.domain.order.dto.responseDto.OrderStatusResponseDto;
@@ -18,38 +19,42 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class OrderLogAspect {
 
-    @AfterReturning(pointcut = "execution(* rider.nbc.domain.order.controller.OrderController.createOrder(..))"
-            , returning = "response")
-    public void logNewOrder(CommonResponse<OrderResponseDto> response) {
-        if (response != null && response.getResult() != null) {
-            OrderResponseDto orderResponse = response.getResult();
-
-            // 주문 정보에서 필요한 값 추출
-            Long storeId = orderResponse.getStoreId();
-            Long orderId = orderResponse.getOrderId();
-            LocalDateTime createAt = orderResponse.getCreatedAt();
-
-            // 로그 기록
-            log.info("[주문 생성] 시각: {}, 가게 ID: {}, 주문 ID: {}", createAt, storeId, orderId);
-
+    @AfterReturning(
+            pointcut = "execution(* rider.nbc.domain.order.controller.OrderController.createOrder(..))",
+            returning = "response",
+            argNames = "response"
+    )
+    public void logNewOrder(ResponseEntity<?> response) {
+        if (response != null && response.getBody() instanceof CommonResponse<?> body) {
+            Object result = body.getResult();
+            if (result instanceof OrderResponseDto order) {
+                log.info("[주문 생성] 시각: {}, 가게 ID: {}, 주문 ID: {}",
+                        order.getCreatedAt(), order.getStoreId(), order.getOrderId());
+            }
         }
     }
 
-    @AfterReturning(pointcut = "execution(* rider.nbc.domain.order.controller.OrderController.patchOrderStatus(..))"
-            , returning = "response")
-    public void logPatchStatusOrder(CommonResponse<OrderStatusResponseDto> response) {
-        if (response != null && response.getResult() != null) {
-            OrderStatusResponseDto orderResponse = response.getResult();
+    @AfterReturning(
+            pointcut = "execution(* rider.nbc.domain.order.controller.OrderController.patchOrderStatus(..))",
+            returning = "response",
+            argNames = "response"
+    )
+    public void logPatchStatusOrder(ResponseEntity<?> response) {
 
-            // 주문 정보에서 필요한 값 추출
-            Long storeId = orderResponse.getStoreId();
-            Long orderId = orderResponse.getOrderId();
-            LocalDateTime createAt = orderResponse.getUpdateAt();
-            OrderStatus orderStatus = orderResponse.getOrderStatus();
+        if (response != null && response.getBody() instanceof CommonResponse<?> body) {
+            Object result = body.getResult();
+            if (result instanceof OrderStatusResponseDto order) {
+                // 주문 정보에서 필요한 값 추출
+                Long storeId = order.getStoreId();
+                Long orderId = order.getOrderId();
+                LocalDateTime createAt = order.getUpdateAt();
+                OrderStatus orderStatus = order.getOrderStatus();
 
-            // 로그 기록
-            log.info("[주문 상태 변경] 시각: {}, 가게 ID: {}, 주문 ID: {}, 주문 상태 : {}", createAt, storeId, orderId, orderStatus);
+                // 로그 기록
+                log.info("[주문 상태 변경] 시각: {}, 가게 ID: {}, 주문 ID: {}, 주문 상태 : {}",
+                        createAt, storeId, orderId, orderStatus);
 
+            }
         }
     }
 

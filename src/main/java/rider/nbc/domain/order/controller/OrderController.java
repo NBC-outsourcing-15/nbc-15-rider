@@ -12,9 +12,7 @@ import rider.nbc.domain.order.dto.responseDto.OrderStatusResponseDto;
 import rider.nbc.domain.order.service.OrderService;
 import rider.nbc.global.auth.AuthUser;
 import rider.nbc.global.response.CommonResponse;
-import rider.nbc.global.response.CommonResponses;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -57,7 +55,7 @@ public class OrderController {
     public ResponseEntity<CommonResponse<OrderStatusResponseDto>> patchOrderStatus(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long orderId,
-            @Valid@RequestBody OrderStatusRequestDto statusRequestDto
+            @Valid @RequestBody OrderStatusRequestDto statusRequestDto
     ) {
         OrderStatusResponseDto result = orderService.patchOrderStatus(authUser, orderId, statusRequestDto);
         return ResponseEntity.ok(CommonResponse.of(true, HttpStatus.OK.value()
@@ -79,7 +77,7 @@ public class OrderController {
                 .body(CommonResponse.of(true,
                         HttpStatus.CREATED.value(),
                         "주문 조회 완료",
-                        orderService.getOrder(authUser,orderId)));
+                        orderService.getOrder(authUser, orderId)));
     }
 
     /**
@@ -89,16 +87,16 @@ public class OrderController {
      * @return 그 유저가 담은 장바구니로 만든 주문내역
      */
     @GetMapping
-    public ResponseEntity<CommonResponses<List<OrderResponseDto>>> getAllOrders(
+    public ResponseEntity<CommonResponse<List<OrderResponseDto>>> getAllOrders(
             @AuthenticationPrincipal AuthUser authUser
     ) {
         List<OrderResponseDto> orders = orderService.getAllOrders(authUser);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponses.of(
+                .body(CommonResponse.of(
                         true,
                         HttpStatus.CREATED.value(),
                         "주문 조회 완료",
-                        Collections.singletonList(orders)));
+                        orders));
     }
 }
