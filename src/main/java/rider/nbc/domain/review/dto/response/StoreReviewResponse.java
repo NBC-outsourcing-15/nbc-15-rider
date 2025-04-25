@@ -8,7 +8,7 @@ import rider.nbc.domain.review.vo.MenuReview;
 import java.util.Set;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 public class StoreReviewResponse {
     private Long reviewId;
     private String content;
