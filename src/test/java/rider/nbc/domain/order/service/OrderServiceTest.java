@@ -228,12 +228,13 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(store, "owner", owner);
 
         Order order = new Order();
+        ReflectionTestUtils.setField(order, "id", 1L);
         ReflectionTestUtils.setField(order, "store", store);
         ReflectionTestUtils.setField(order, "user", owner);
         order.updateStatus(OrderStatus.WAITING);
 
 
-        given(orderRepository.findById(1L)).willReturn(Optional.of(order));
+        given(orderRepository.findByIdOrElseThrow(1L)).willReturn(order);
         OrderStatusRequestDto dto = new OrderStatusRequestDto("ACCEPTED");
 
         // when
@@ -270,11 +271,12 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(store, "owner", realowner);
 
         Order order = new Order();
+        ReflectionTestUtils.setField(order, "id", 1L);
         ReflectionTestUtils.setField(order, "store", store);
         ReflectionTestUtils.setField(order, "user", realowner);
         order.updateStatus(OrderStatus.WAITING);
 
-        given(orderRepository.findById(1L)).willReturn(Optional.of(order));
+        given(orderRepository.findByIdOrElseThrow(1L)).willReturn(order);
 
         // when & then
         assertThrows(OrderException.class, () ->
@@ -294,11 +296,12 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(store, "owner", owner);
 
         Order order = new Order();
+        ReflectionTestUtils.setField(order, "id", 1L);
         ReflectionTestUtils.setField(order, "store", store);
         ReflectionTestUtils.setField(order, "user", owner);
         order.updateStatus(OrderStatus.WAITING);
 
-        given(orderRepository.findById(1L)).willReturn(Optional.of(order));
+        given(orderRepository.findByIdOrElseThrow(1L)).willReturn(order);
         OrderStatusRequestDto dto = new OrderStatusRequestDto("DONE");
 
         // when & then
@@ -348,6 +351,21 @@ class OrderServiceTest {
             // then
             assertEquals(100L, result.getOrderId());
         }
+
+
+        @Test
+        @DisplayName("getOrder 성공 - 주문 가게 사장이 주문 조회 성공")
+        void getOrder_success_ceo() {
+            // given
+            given(orderRepository.findByIdOrElseThrow(100L)).willReturn(order);
+
+            // when
+            OrderResponseDto result = orderService.getOrder(ceoAuthUser, 100L);
+
+            // then
+            assertEquals(100L, result.getOrderId());
+        }
+
 
         @Test
         void getOrder실패_권한없는유저() {
