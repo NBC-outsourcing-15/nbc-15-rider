@@ -1,6 +1,9 @@
 package rider.nbc.domain.keyword.repository;
 
+import java.util.List;
 import java.util.Set;
+
+import rider.nbc.domain.store.entity.Store;
 
 /**
  * @author    : kimjungmin
@@ -8,4 +11,8 @@ import java.util.Set;
  */
 public interface KeywordRepository {
 	void insertKeywordsAndMappings(Long storeId, Set<String> words);
+
+	List<Store> searchStoresByKeyword(String keyword, int page, int size);
+
+	Long countStoresByKeyword(String keyword);
 }

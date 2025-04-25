@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
 import rider.nbc.domain.keyword.entity.Keyword;
+import rider.nbc.domain.store.entity.Store;
+import rider.nbc.domain.store.entity.StoreStatus;
 
 /**
  * @author    : kimjungmin
@@ -25,7 +27,14 @@ public class KeywordJdbcRepository implements KeywordRepository {
 		.id(rs.getLong("id"))
 		.word(rs.getString("word"))
 		.build();
-	
+
+	private static final RowMapper<Store> storeRowMapper = (rs, rowNum) -> Store.builder()
+		.id(rs.getLong("store_id"))
+		.name(rs.getString("name"))
+		.storePictureUrl(rs.getString("store_picture_url"))
+		.storeStatus(StoreStatus.valueOf(rs.getString("store_status")))
+		.build();
+
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
 	@Override
@@ -34,7 +43,6 @@ public class KeywordJdbcRepository implements KeywordRepository {
 			return;
 
 		// 존재하는 단어 조회
-
 		List<Keyword> existingKeywords = jdbcTemplate.query("SELECT id, word FROM keyword WHERE word IN (:words)",
 			Map.of("words", words),
 			keywordRowMapper
@@ -80,5 +88,41 @@ public class KeywordJdbcRepository implements KeywordRepository {
 			.toArray(SqlParameterSource[]::new);
 
 		jdbcTemplate.batchUpdate(batchSql, batchParams);
+	}
+
+	@Override
+	public List<Store> searchStoresByKeyword(String keyword, int page, int size) {
+		String sql = """
+			SELECT DISTINCT s.store_id, s.name, s.store_picture_url, s.store_status
+			FROM stores s
+			JOIN store_keyword sk ON s.store_id = sk.store_id
+			JOIN keyword k ON sk.keyword_id = k.id
+			WHERE k.word LIKE :keyword
+			AND s.store_status != 'CLOSED_PERMANENTLY'
+			""";
+
+		MapSqlParameterSource params = new MapSqlParameterSource();
+		params.addValue("keyword", "%" + keyword + "%");
+		params.addValue("limit", size);
+		params.addValue("offset", page * size);
+
+		return jdbcTemplate.query(sql, params, storeRowMapper);
+	}
+
+	@Override
+	public Long countStoresByKeyword(String keyword) {
+		String sql = """
+			SELECT COUNT(DISTINCT s.store_id)
+			FROM stores s
+			JOIN store_keyword sk ON s.store_id = sk.store_id
+			JOIN keyword k ON sk.keyword_id = k.id
+			WHERE k.word LIKE :keyword
+			AND s.store_status != 'CLOSED_PERMANENTLY'
+			""";
+
+		MapSqlParameterSource params = new MapSqlParameterSource();
+		params.addValue("keyword", "keyword" + "%");
+
+		return jdbcTemplate.queryForObject(sql, params, Long.class);
 	}
 }

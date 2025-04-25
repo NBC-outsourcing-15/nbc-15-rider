@@ -11,15 +11,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import rider.nbc.domain.keyword.service.KeywordService;
+import rider.nbc.domain.store.dto.PageResponseDto;
 import rider.nbc.domain.store.dto.StoreCreateRequestDto;
 import rider.nbc.domain.store.dto.StoreDetailResponseDto;
 import rider.nbc.domain.store.dto.StoreResponseDto;
 import rider.nbc.domain.store.dto.StoreReviewsResponseDto;
+import rider.nbc.domain.store.dto.StoreSearchResponseDto;
 import rider.nbc.domain.store.dto.StoreUpdateRequestDto;
 import rider.nbc.domain.store.entity.Store;
 import rider.nbc.domain.store.service.StoreService;
@@ -138,6 +141,30 @@ public class StoreController {
 				.success(true)
 				.status(HttpStatus.OK.value())
 				.message("가게가 성공적으로 폐업 처리되었습니다.")
+				.build());
+	}
+
+	/**
+	 * 키워드로 가게 검색
+	 *
+	 * @param keyword 검색할 키워드
+	 * @param page 페이지 번호 (0부터 시작)
+	 * @param size 페이지 크기
+	 * @return 키워드와 관련된 가게 목록 (id, name, storePicture)과 페이지 정보
+	 */
+	@GetMapping("/api/v1/stores/search")
+	public ResponseEntity<CommonResponse<PageResponseDto<StoreSearchResponseDto>>> searchStores(
+		@RequestParam String keyword,
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size) {
+		PageResponseDto<StoreSearchResponseDto> pageResponse = storeService.searchStoresByKeyword(keyword, page, size);
+
+		return ResponseEntity.ok()
+			.body(CommonResponse.<PageResponseDto<StoreSearchResponseDto>>builder()
+				.success(true)
+				.status(HttpStatus.OK.value())
+				.message("가게 검색이 성공적으로 완료되었습니다.")
+				.result(pageResponse)
 				.build());
 	}
 }
