@@ -2,6 +2,7 @@ package rider.nbc.domain.store.controller;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -164,6 +165,28 @@ public class StoreController {
 				.success(true)
 				.status(HttpStatus.OK.value())
 				.message("가게 검색이 성공적으로 완료되었습니다.")
+				.result(pageResponse)
+				.build());
+	}
+
+	/**
+	 * 가게 목록 조회
+	 *
+	 * @param category 카테고리 (optional)
+	 * @param pageable 페이징 및 정렬 정보
+	 * @return 가게 목록과 페이지 정보
+	 */
+	@GetMapping("/api/v1/stores")
+	public ResponseEntity<CommonResponse<PageResponseDto<StoreSearchResponseDto>>> getStores(
+		@RequestParam(required = false) String category,
+		Pageable pageable) {
+		PageResponseDto<StoreSearchResponseDto> pageResponse = storeService.getStores(category, pageable);
+
+		return ResponseEntity.ok()
+			.body(CommonResponse.<PageResponseDto<StoreSearchResponseDto>>builder()
+				.success(true)
+				.status(HttpStatus.OK.value())
+				.message("가게 목록 조회가 성공적으로 완료되었습니다.")
 				.result(pageResponse)
 				.build());
 	}
