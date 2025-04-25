@@ -62,6 +62,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/stores/*/menus/**").hasRole("CEO") // 메뉴삭제
                         .requestMatchers(HttpMethod.GET, "/api/v1/stores/*/menus/**").permitAll() // 가게 내 메뉴 조회 모두 허용
                         .requestMatchers(
+                                "/api/v1/notification/subscribe",
                                 "/api/v1/users/signup",         // 로그인, 회원가입, 재발급 등 인증 없이 접근 가능
                                 "/api/v1/users/signin",
                                 "/api/v1/users/reissue",

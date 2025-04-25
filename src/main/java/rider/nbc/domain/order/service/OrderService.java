@@ -8,6 +8,7 @@ import rider.nbc.domain.cart.exception.CartException;
 import rider.nbc.domain.cart.exception.CartExceptionCode;
 import rider.nbc.domain.cart.repository.CartRedisRepository;
 import rider.nbc.domain.cart.vo.MenuItem;
+import rider.nbc.domain.notification.service.NotificationService;
 import rider.nbc.domain.order.dto.requestDto.OrderStatusRequestDto;
 import rider.nbc.domain.order.dto.responseDto.OrderResponseDto;
 import rider.nbc.domain.order.entity.Order;
@@ -38,6 +39,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CartRedisRepository cartRedisRepository;
     private final StoreRepository storeRepository;
+    private final NotificationService notificationService;
 
 
     @Transactional
@@ -124,6 +126,12 @@ public class OrderService {
         checkCanChangeStatus(order.getOrderStatus(), orderStatus);
 
         order.updateStatus(orderStatus);
+        notificationService.sendOrderStatusNotification(
+                authUser.getId(), // 주문 작성자 ID
+                orderId,
+                orderStatus // OrderStatus enum
+        );
+
 
         return orderStatus.getDisplayName();
     }

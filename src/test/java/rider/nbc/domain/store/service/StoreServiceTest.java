@@ -63,7 +63,7 @@ class StoreServiceTest {
 			@DisplayName("가게를 생성하고 반환한다")
 			void it_creates_and_returns_store() {
 				// Given
-				User ceoUser = defaultUser(Role.CEO);
+				User ceoUser = defaultUser(Role.ROLE_CEO);
 
 				Store expectedStore = requestDto.toEntity(ceoUser);
 
