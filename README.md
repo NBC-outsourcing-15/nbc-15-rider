@@ -79,7 +79,6 @@
 ---
 
 ## 🗂 ERD
-- <a href= "https://www.erdcloud.com/d/8WQEd2mNQZJz4tRQE"> ERD 링크 </a>
 ![](https://velog.velcdn.com/images/tofha054/post/86b54ee3-9e8e-4121-9658-0b08b743e65f/image.png)
 
 
