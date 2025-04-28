@@ -104,7 +104,6 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.result.accessToken").value("access"))
                 .andExpect(jsonPath("$.result.refreshToken").value("refresh"));
     }
-
     @Test
     @DisplayName("토큰 재발급 성공")
     void reissue() throws Exception {
@@ -112,13 +111,17 @@ class UserControllerTest {
         setField(request, "refreshToken", "oldToken");
 
         when(userService.reissue(any())).thenReturn(new TokenResponseDto("newAccess", "newRefresh"));
+        when(tokenService.createAccessTokenCookie(any()))
+                .thenReturn(ResponseCookie.from("accessToken", "newAccess").build());
 
         mockMvc.perform(post("/api/v1/users/reissue")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken").value("newAccess"));
+                .andExpect(jsonPath("$.result.accessToken").value("newAccess"))
+                .andExpect(jsonPath("$.result.refreshToken").value("newRefresh"));
     }
+
 
 
     @Test
