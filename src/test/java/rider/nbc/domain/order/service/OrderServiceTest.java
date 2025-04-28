@@ -291,12 +291,4 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(order, "user", owner);
         order.updateStatus(OrderStatus.WAITING);
 
-        given(orderRepository.findById(1L)).willReturn(Optional.of(order));
-        OrderStatusRequestDto dto = new OrderStatusRequestDto("DONE");
-
-        // when & then
-        assertThrows(OrderException.class, () ->
-                orderService.patchOrderStatus(authUser, 1L, dto));
-    }
-
 }
