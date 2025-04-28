@@ -41,6 +41,16 @@ public class StoreReviewService {
     private final OrderRepository orderRepository;
     private final StoreRepository storeRepository;
 
+    /**
+     * 가게 리뷰 생성
+     *
+     * @param storeReviewCreateRequest 리뷰내용, 별점, 메뉴내용(List, 메뉴명, 리뷰내용)
+     * @param authUser                 로그인한 유저 정보
+     * @param storeId                  가게 id
+     * @param orderId                  주문 id
+     * @return 리뷰 정보
+     * @author 이승현
+     */
     @Transactional
     public StoreReviewResponse createStoreReview(StoreReviewCreateRequest storeReviewCreateRequest
             , AuthUser authUser, Long storeId, Long orderId) {
@@ -49,7 +59,7 @@ public class StoreReviewService {
         }
 
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(()-> new OrderException(OrderExceptionCode.INVALID_ORDER_ID));
+                .orElseThrow(() -> new OrderException(OrderExceptionCode.INVALID_ORDER_ID));
         if (!order.getOrderStatus().equals(OrderStatus.DONE)) {
             throw new StoreReviewException(StoreReviewExceptionCode.ORDER_NOT_DONE);
         }
@@ -67,8 +77,8 @@ public class StoreReviewService {
 
         List<String> orderMenuNames = order.getOrderMenus().stream().map(OrderMenu::getMenuName).toList();
 
-        for (StoreReviewCreateRequest.MenuReviewRequest menuReviewRequest:storeReviewCreateRequest.getMenuReviews()){
-            if (!orderMenuNames.contains(menuReviewRequest.getOrderMenuName())){
+        for (StoreReviewCreateRequest.MenuReviewRequest menuReviewRequest : storeReviewCreateRequest.getMenuReviews()) {
+            if (!orderMenuNames.contains(menuReviewRequest.getOrderMenuName())) {
                 throw new StoreReviewException(StoreReviewExceptionCode.NOT_ORDER_MENU);
             }
         }
@@ -94,6 +104,15 @@ public class StoreReviewService {
         return StoreReviewResponse.from(savedReview);
     }
 
+    /**
+     * 가게 리뷰 수정
+     *
+     * @param storeReviewUpdateRequest 리뷰내용, 별점
+     * @param authUser                 로그인한 유저 정보
+     * @param storeReviewId            리뷰 id
+     * @return 리뷰 정보
+     * @author 이승현
+     */
     @Transactional
     public StoreReviewResponse updateStoreReview(StoreReviewUpdateRequest storeReviewUpdateRequest
             , AuthUser authUser, Long storeReviewId) {
@@ -116,6 +135,15 @@ public class StoreReviewService {
         return StoreReviewResponse.from(storeReview);
     }
 
+    /**
+     * 가게 리뷰 삭제
+     *
+     * @param authUser      로그인한 유저 정보
+     * @param storeId       가게 id
+     * @param storeReviewId 리뷰 id
+     * @return 삭제된 리뷰 id
+     * @author 이승현
+     */
     @Transactional
     public Long deleteStoreReview(AuthUser authUser, Long storeId, Long storeReviewId) {
         StoreReview storeReview = storeReviewRepository.findById(storeReviewId)
